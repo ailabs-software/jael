@@ -16,7 +16,7 @@ class TextNode extends ElementChild {
 }
 
 abstract class Element extends ElementChild {
-  static const List<String> selfClosing = [
+  static const Set<String> selfClosing = {
     'include',
     'base',
     'basefont',
@@ -30,7 +30,7 @@ abstract class Element extends ElementChild {
     'img',
     'input',
     'param',
-  ];
+  };
 
   Identifier get tagName;
 
