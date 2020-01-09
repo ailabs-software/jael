@@ -1,6 +1,6 @@
-import 'dart:mirrors';
 import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'identifier.dart';
 import 'token.dart';
@@ -13,10 +13,10 @@ class MemberExpression extends Expression {
   MemberExpression(this.expression, this.op, this.name);
 
   @override
-  compute(SymbolTable scope) {
-    var target = expression.compute(scope);
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    Object target = expression.compute(memberResolver, scope);
     if (op.span.text == '?.' && target == null) return null;
-    return reflect(target).getField(Symbol(name.name)).reflectee;
+    return memberResolver.getMember(scope, name.name);
   }
 
   @override

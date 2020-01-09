@@ -1,4 +1,6 @@
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'ast_node.dart';
 import 'expression.dart';
 import 'identifier.dart';
@@ -11,20 +13,20 @@ class MapLiteral extends Literal {
   MapLiteral(this.lCurly, this.pairs, this.rCurly);
 
   @override
-  compute(scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
     return pairs.fold<Map>({}, (out, p) {
       var key, value;
 
       if (p.colon == null) {
         if (p.key is! Identifier) {
-          key = value = p.key.compute(scope);
+          key = value = p.key.compute(memberResolver, scope);
         } else {
           key = (p.key as Identifier).name;
-          value = p.key.compute(scope);
+          value = p.key.compute(memberResolver, scope);
         }
       } else {
-        key = p.key.compute(scope);
-        value = p.value.compute(scope);
+        key = p.key.compute(memberResolver, scope);
+        value = p.value.compute(memberResolver, scope);
       }
 
       return out..[key] = value;

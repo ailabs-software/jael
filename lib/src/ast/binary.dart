@@ -1,4 +1,6 @@
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -9,8 +11,8 @@ class BinaryExpression extends Expression {
   BinaryExpression(this.left, this.operator, this.right);
 
   @override
-  compute(scope) {
-    var l = left.compute(scope), r = right.compute(scope);
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    var l = left.compute(memberResolver, scope), r = right.compute(memberResolver, scope);
 
     switch (operator?.type) {
       case TokenType.asterisk:

@@ -13,12 +13,12 @@ void main() {
     expect(foo.attributes, hasLength(2));
     expect(foo.getAttribute('bar'), isNotNull);
     expect(foo.getAttribute('yes'), isNotNull);
-    expect(foo.getAttribute('bar').value.compute(null), 'baz');
+    expect(foo.getAttribute('bar').value.compute(null, null), 'baz');
     expect(
         foo
             .getAttribute('yes')
             .value
-            .compute(SymbolTable(values: {'no': 'maybe'})),
+            .compute(null, SymbolTable(values: {'no': 'maybe'})),
         'maybe');
   });
 
@@ -33,7 +33,7 @@ void main() {
     expect(bar.tagName.name, 'bar');
 
     var interpolation = bar.children.first as Interpolation;
-    expect(interpolation.expression.compute(null), 24 * 3);
+    expect(interpolation.expression.compute(null, null), 24 * 3);
   });
 }
 

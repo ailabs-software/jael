@@ -45,8 +45,10 @@ abstract class Element extends ElementChild {
 class SelfClosingElement extends Element {
   final Token lt, slash, gt;
 
+  @override
   final Identifier tagName;
 
+  @override
   final Iterable<Attribute> attributes;
 
   @override
@@ -68,10 +70,15 @@ class SelfClosingElement extends Element {
 class RegularElement extends Element {
   final Token lt, gt, lt2, slash, gt2;
 
-  final Identifier tagName, tagName2;
+  @override
+  final Identifier tagName;
 
+  final Identifier tagName2;
+
+  @override
   final Iterable<Attribute> attributes;
 
+  @override
   final Iterable<ElementChild> children;
 
   RegularElement(this.lt, this.tagName, this.attributes, this.gt, this.children,

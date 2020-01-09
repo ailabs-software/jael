@@ -1,4 +1,6 @@
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -19,13 +21,13 @@ class Conditional extends Expression {
   }
 
   @override
-  compute(scope) {
-    var v = condition.compute(scope) as bool;
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    var v = condition.compute(memberResolver, scope) as bool;
 
     if (scope.resolve('!strict!')?.value == false) {
       v = v == true;
     }
 
-    return v ? ifTrue.compute(scope) : ifFalse.compute(scope);
+    return v ? ifTrue.compute(memberResolver, scope) : ifFalse.compute(memberResolver, scope);
   }
 }

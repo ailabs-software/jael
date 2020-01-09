@@ -29,7 +29,7 @@ var argParser = ArgParser()
       help: 'Overwrite input files with formatted output.',
       negatable: false);
 
-main(List<String> args) async {
+void main(List<String> args) async {
   try {
     var argResults = argParser.parse(args);
     if (argResults['help'] as bool) {

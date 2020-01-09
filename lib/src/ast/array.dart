@@ -1,4 +1,6 @@
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -9,7 +11,7 @@ class Array extends Expression {
   Array(this.lBracket, this.rBracket, this.items);
 
   @override
-  compute(scope) => items.map((e) => e.compute(scope)).toList();
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) => items.map((e) => e.compute(memberResolver, scope)).toList();
 
   @override
   FileSpan get span {
@@ -34,8 +36,8 @@ class IndexerExpression extends Expression {
   }
 
   @override
-  compute(scope) {
-    var a = target.compute(scope), b = indexer.compute(scope);
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    dynamic a = target.compute(memberResolver, scope), b = indexer.compute(memberResolver, scope);
     return a[b];
   }
 }

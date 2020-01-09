@@ -57,6 +57,7 @@ class ConditionalParselet implements InfixParselet {
 }
 
 class BinaryParselet implements InfixParselet {
+  @override
   final int precedence;
 
   const BinaryParselet(this.precedence);

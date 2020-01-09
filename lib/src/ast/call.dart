@@ -1,5 +1,6 @@
 import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'ast_node.dart';
 import 'expression.dart';
 import 'identifier.dart';
@@ -23,20 +24,20 @@ class Call extends Expression {
         .expand(rParen.span);
   }
 
-  List computePositional(SymbolTable scope) =>
-      arguments.map((e) => e.compute(scope)).toList();
+  List computePositional(IMemberResolver memberResolver, SymbolTable scope) =>
+      arguments.map((e) => e.compute(memberResolver, scope)).toList();
 
-  Map<Symbol, dynamic> computeNamed(SymbolTable scope) {
+  Map<Symbol, dynamic> computeNamed(IMemberResolver memberResolver, SymbolTable scope) {
     return namedArguments.fold<Map<Symbol, dynamic>>({}, (out, a) {
-      return out..[Symbol(a.name.name)] = a.value.compute(scope);
+      return out..[Symbol(a.name.name)] = a.value.compute(memberResolver, scope);
     });
   }
 
   @override
-  compute(scope) {
-    var callee = target.compute(scope);
-    var args = computePositional(scope);
-    var named = computeNamed(scope);
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    var callee = target.compute(memberResolver, scope);
+    var args = computePositional(memberResolver, scope);
+    var named = computeNamed(memberResolver, scope);
 
     return Function.apply(callee as Function, args, named);
   }

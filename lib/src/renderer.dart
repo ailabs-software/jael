@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:code_buffer/code_buffer.dart';
 import 'package:symbol_table/symbol_table.dart';
+import 'member_resolver.dart';
 import 'ast/ast.dart';
 import 'text/parser.dart';
 import 'text/scanner.dart';
@@ -80,39 +81,43 @@ class Renderer {
   /// If [strictResolution] is `false` (default: `true`), then undefined identifiers will return `null`
   /// instead of throwing.
   void render(Document document, CodeBuffer buffer, SymbolTable scope,
-      {bool strictResolution = true}) {
+      {bool strictResolution = true, IMemberResolver memberResolver}) {
+
     scope.create('!strict!', value: strictResolution != false);
 
+    if (memberResolver == null) {
+      memberResolver = new DefaultMemberResolver();
+    }
+
     if (document.doctype != null) buffer.writeln(document.doctype.span.text);
-    renderElement(
-        document.root, buffer, scope, document.doctype?.public == null);
+    renderElement(document.root, buffer, memberResolver, scope, document.doctype?.public == null);
   }
 
-  void renderElement(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+  void renderElement(Element element, CodeBuffer buffer,  IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+
     var childScope = scope.createChild();
 
     if (element.attributes.any((a) => a.name == 'for-each')) {
-      renderForeach(element, buffer, childScope, html5);
+      renderForeach(element, buffer, memberResolver, childScope, html5);
       return;
     } else if (element.attributes.any((a) => a.name == 'if')) {
-      renderIf(element, buffer, childScope, html5);
+      renderIf(element, buffer, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'declare') {
-      renderDeclare(element, buffer, childScope, html5);
+      renderDeclare(element, buffer, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'switch') {
-      renderSwitch(element, buffer, childScope, html5);
+      renderSwitch(element, buffer, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'element') {
-      registerCustomElement(element, buffer, childScope, html5);
+      registerCustomElement(element, buffer, memberResolver, childScope, html5);
       return;
     } else {
       var customElementValue =
-          scope.resolve(customElementName(element.tagName.name))?.value;
+          scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
 
       if (customElementValue is Element) {
-        renderCustomElement(element, buffer, childScope, html5);
+        renderCustomElement(element, buffer, memberResolver, childScope, html5);
         return;
       }
     }
@@ -120,7 +125,7 @@ class Renderer {
     buffer..write('<')..write(element.tagName.name);
 
     for (var attribute in element.attributes) {
-      var value = attribute.value?.compute(childScope);
+      var value = attribute.value?.compute(memberResolver, childScope);
 
       if (value == false || value == null) continue;
 
@@ -162,8 +167,7 @@ class Renderer {
 
       for (int i = 0; i < element.children.length; i++) {
         var child = element.children.elementAt(i);
-        renderElementChild(element, child, buffer, childScope, html5, i,
-            element.children.length);
+        renderElementChild(element, child, buffer, memberResolver, childScope, html5, i, element.children.length);
       }
 
       buffer.writeln();
@@ -172,8 +176,8 @@ class Renderer {
     }
   }
 
-  void renderForeach(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+  void renderForeach(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+
     var attribute = element.attributes.singleWhere((a) => a.name == 'for-each');
     if (attribute.value == null) return;
 
@@ -181,8 +185,8 @@ class Renderer {
         .firstWhere((a) => a.name == 'as', orElse: () => null);
     var indexAsAttribute = element.attributes
         .firstWhere((a) => a.name == 'index-as', orElse: () => null);
-    var alias = asAttribute?.value?.compute(scope)?.toString() ?? 'item';
-    var indexAs = indexAsAttribute?.value?.compute(scope)?.toString() ?? 'i';
+    var alias = asAttribute?.value?.compute(memberResolver, scope)?.toString() ?? 'item';
+    var indexAs = indexAsAttribute?.value?.compute(memberResolver, scope)?.toString() ?? 'i';
     var otherAttributes = element.attributes.where(
         (a) => a.name != 'for-each' && a.name != 'as' && a.name != 'index-as');
     Element strippedElement;
@@ -204,17 +208,17 @@ class Renderer {
     }
 
     int i = 0;
-    for (var item in attribute.value.compute(scope)) {
+    for (var item in attribute.value.compute(memberResolver, scope)) {
       var childScope = scope.createChild(values: {alias: item, indexAs: i++});
-      renderElement(strippedElement, buffer, childScope, html5);
+      renderElement(strippedElement, buffer, memberResolver, childScope, html5);
     }
   }
 
   void renderIf(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
     var attribute = element.attributes.singleWhere((a) => a.name == 'if');
 
-    var vv = attribute.value.compute(scope);
+    var vv = attribute.value.compute(memberResolver, scope);
 
     if (scope.resolve('!strict!')?.value == false) {
       vv = vv == true;
@@ -243,29 +247,28 @@ class Renderer {
           element.gt2);
     }
 
-    renderElement(strippedElement, buffer, scope, html5);
+    renderElement(strippedElement, buffer, memberResolver, scope, html5);
   }
 
-  void renderDeclare(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+  void renderDeclare(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     for (var attribute in element.attributes) {
       scope.create(attribute.name,
-          value: attribute.value?.compute(scope), constant: true);
+          value: attribute.value?.compute(memberResolver, scope), constant: true);
     }
 
     for (int i = 0; i < element.children.length; i++) {
       var child = element.children.elementAt(i);
-      renderElementChild(
-          element, child, buffer, scope, html5, i, element.children.length);
+      renderElementChild(element, child, buffer, memberResolver, scope, html5, i, element.children.length);
     }
   }
 
   void renderSwitch(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
     var value = element.attributes
         .firstWhere((a) => a.name == 'value', orElse: () => null)
         ?.value
-        ?.compute(scope);
+        ?.compute(memberResolver, scope);
 
     var cases = element.children
         .whereType<Element>()
@@ -275,12 +278,11 @@ class Renderer {
       var comparison = child.attributes
           .firstWhere((a) => a.name == 'value', orElse: () => null)
           ?.value
-          ?.compute(scope);
+          ?.compute(memberResolver, scope);
       if (comparison == value) {
         for (int i = 0; i < child.children.length; i++) {
           var c = child.children.elementAt(i);
-          renderElementChild(
-              element, c, buffer, scope, html5, i, child.children.length);
+          renderElementChild(element, c, buffer, memberResolver, scope, html5, i, child.children.length);
         }
 
         return;
@@ -293,14 +295,13 @@ class Renderer {
     if (defaultCase != null) {
       for (int i = 0; i < defaultCase.children.length; i++) {
         var child = defaultCase.children.elementAt(i);
-        renderElementChild(element, child, buffer, scope, html5, i,
-            defaultCase.children.length);
+        renderElementChild(element, child, buffer, memberResolver, scope, html5, i, defaultCase.children.length);
       }
     }
   }
 
   void renderElementChild(Element parent, ElementChild child, CodeBuffer buffer,
-      SymbolTable scope, bool html5, int index, int total) {
+      IMemberResolver memberResolver, SymbolTable scope, bool html5, int index, int total) {
     if (child is Text && parent?.tagName?.name != 'textarea') {
       if (index == 0) {
         buffer.write(child.span.text.trimLeft());
@@ -310,7 +311,7 @@ class Renderer {
         buffer.write(child.span.text);
       }
     } else if (child is Interpolation) {
-      var value = child.expression.compute(scope);
+      var value = child.expression.compute(memberResolver, scope);
 
       if (value != null) {
         if (child.isRaw) {
@@ -321,20 +322,20 @@ class Renderer {
       }
     } else if (child is Element) {
       if (buffer?.lastLine?.text?.isNotEmpty == true) buffer.writeln();
-      renderElement(child, buffer, scope, html5);
+      renderElement(child, buffer, memberResolver, scope, html5);
     }
   }
 
-  static String customElementName(String name) => 'elements@$name';
+  static String customElementName(IMemberResolver memberResolver, String name) => 'elements@$name';
 
   void registerCustomElement(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
+      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
     if (element is! RegularElement) {
       throw JaelError(JaelErrorSeverity.error,
           "Custom elements cannot be self-closing.", element.span);
     }
 
-    var name = element.getAttribute('name')?.value?.compute(scope)?.toString();
+    var name = element.getAttribute('name')?.value?.compute(memberResolver, scope)?.toString();
 
     if (name == null) {
       throw JaelError(
@@ -345,7 +346,7 @@ class Renderer {
 
     try {
       var p = scope.isRoot ? scope : scope.parent;
-      p.create(customElementName(name), value: element, constant: true);
+      p.create(customElementName(memberResolver, name), value: element, constant: true);
     } on StateError {
       throw JaelError(
           JaelErrorSeverity.error,
@@ -354,25 +355,24 @@ class Renderer {
     }
   }
 
-  void renderCustomElement(
-      Element element, CodeBuffer buffer, SymbolTable scope, bool html5) {
-    var template = scope.resolve(customElementName(element.tagName.name)).value
+  void renderCustomElement(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+
+    var template = scope.resolve(customElementName(memberResolver, element.tagName.name)).value
         as RegularElement;
-    var renderAs = element.getAttribute('as')?.value?.compute(scope);
+    var renderAs = element.getAttribute('as')?.value?.compute(memberResolver, scope);
     var attrs = element.attributes.where((a) => a.name != 'as');
 
     for (var attribute in attrs) {
       if (attribute.name.startsWith('@')) {
         scope.create(attribute.name.substring(1),
-            value: attribute.value?.compute(scope), constant: true);
+            value: attribute.value?.compute(memberResolver, scope), constant: true);
       }
     }
 
     if (renderAs == false) {
       for (int i = 0; i < template.children.length; i++) {
         var child = template.children.elementAt(i);
-        renderElementChild(
-            element, child, buffer, scope, html5, i, element.children.length);
+        renderElementChild(element, child, buffer, memberResolver, scope, html5, i, element.children.length);
       }
     } else {
       var tagName = renderAs?.toString() ?? 'div';
@@ -389,7 +389,7 @@ class Renderer {
           SyntheticIdentifier(tagName),
           template.gt2);
 
-      renderElement(syntheticElement, buffer, scope, html5);
+      renderElement(syntheticElement, buffer, memberResolver, scope, html5);
     }
   }
 }

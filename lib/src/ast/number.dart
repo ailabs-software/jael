@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -24,7 +26,7 @@ class NumberLiteral extends Literal {
   }
 
   @override
-  compute(scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
     return _value ??= parse(number.span.text);
   }
 }
@@ -41,7 +43,7 @@ class HexLiteral extends Literal {
   static num parse(String value) => int.parse(value.substring(2), radix: 16);
 
   @override
-  compute(scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
     return _value ??= parse(hex.span.text);
   }
 }

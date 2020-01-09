@@ -4,7 +4,7 @@ import 'package:code_buffer/code_buffer.dart';
 import 'package:jael/jael.dart' as jael;
 import 'package:symbol_table/symbol_table.dart';
 
-main() {
+void main() {
   while (true) {
     var buf = StringBuffer();
     int ch;

@@ -1,8 +1,8 @@
-import 'dart:mirrors';
 import 'package:source_span/source_span.dart';
+import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'call.dart';
 import 'expression.dart';
-import 'member.dart';
 import 'token.dart';
 
 class NewExpression extends Expression {
@@ -15,18 +15,7 @@ class NewExpression extends Expression {
   FileSpan get span => $new.span.expand(call.span);
 
   @override
-  compute(scope) {
-    var targetType = call.target.compute(scope);
-    var positional = call.computePositional(scope);
-    var named = call.computeNamed(scope);
-    var name = '';
-
-    if (call.target is MemberExpression) {
-      name = (call.target as MemberExpression).name.name;
-    }
-
-    return reflectClass(targetType as Type)
-        .newInstance(Symbol(name), positional, named)
-        .reflectee;
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    return new UnsupportedError('NewExpression is unsupported.');
   }
 }

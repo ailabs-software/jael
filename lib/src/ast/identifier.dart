@@ -1,5 +1,6 @@
 import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -9,7 +10,7 @@ class Identifier extends Expression {
   Identifier(this.id);
 
   @override
-  compute(SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
     switch (name) {
       case 'null':
         return null;

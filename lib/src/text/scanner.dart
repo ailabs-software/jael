@@ -82,8 +82,12 @@ final Map<Pattern, TokenType> _expressionPatterns = {
 };
 
 class _Scanner implements Scanner {
+  @override
   final List<JaelError> errors = [];
+
+  @override
   final List<Token> tokens = [];
+
   _ScannerState state = _ScannerState.html;
   final Queue<String> openTags = Queue();
 

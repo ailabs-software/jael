@@ -1,13 +1,16 @@
 import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/src/member_resolver.dart';
 import 'ast_node.dart';
 import 'token.dart';
 
 abstract class Expression extends AstNode {
-  compute(SymbolTable scope);
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope);
 }
 
-abstract class Literal extends Expression {}
+abstract class Literal extends Expression {
+
+}
 
 class Negation extends Expression {
   final Token exclamation;
@@ -21,8 +24,8 @@ class Negation extends Expression {
   }
 
   @override
-  compute(SymbolTable scope) {
-    var v = expression.compute(scope) as bool;
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+    var v = expression.compute(memberResolver, scope) as bool;
 
     if (scope.resolve('!strict!')?.value == false) {
       v = v == true;
