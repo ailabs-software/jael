@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:symbol_table/symbol_table.dart';
 import 'member_resolver.dart';
 import 'ast/ast.dart';
@@ -14,6 +13,9 @@ abstract class Renderer<T extends StringSink>
   /** Abstract method. Renders a real element */
   void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
 
+  /** Abstract method. Write an interpolated value, properly escaping */
+  void writeInterpolatedValue(T output, Interpolation interpolation, dynamic value);
+  
   /** Abstract method. Render element close */
   void renderElementClose(T output, Element element);
 
@@ -221,13 +223,10 @@ abstract class Renderer<T extends StringSink>
       dynamic value = child.expression.compute(memberResolver, scope);
 
       if (value != null) {
-        if (child.isRaw) {
-          output.write(value);
-        } else {
-          output.write(htmlEscape.convert(value.toString()));
-        }
+        writeInterpolatedValue(output, child, value);
       }
-    } else if (child is Element) {
+    }
+    else if (child is Element) {
       beforeRenderChildElement(output);
       renderElement(child, output, memberResolver, scope, html5);
     }

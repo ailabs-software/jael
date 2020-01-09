@@ -69,6 +69,18 @@ class CodeBufferRenderer extends Renderer<CodeBuffer>
     }
   }
 
+  /** Write an interpolated value, properly escaping */
+  @override
+  void writeInterpolatedValue(CodeBuffer output, Interpolation interpolation, dynamic value)
+  {
+    if (interpolation.isRaw) {
+      output.write(value);
+    }
+    else {
+      output.write( htmlEscape.convert( value.toString() ) );
+    }
+  }
+
   /** Render element close */
   @override
   void renderElementClose(CodeBuffer output, Element element)
