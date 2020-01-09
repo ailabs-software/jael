@@ -12,7 +12,8 @@ class BinaryExpression extends Expression {
 
   @override
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
-    var l = left.compute(memberResolver, scope), r = right.compute(memberResolver, scope);
+    dynamic l = left.compute(memberResolver, scope);
+    dynamic r = right.compute(memberResolver, scope);
 
     switch (operator?.type) {
       case TokenType.asterisk:

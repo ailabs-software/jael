@@ -28,7 +28,7 @@ void main() {
       const jael.Renderer().render(
         document,
         output,
-        SymbolTable(values: Platform.environment),
+        new SymbolTable<dynamic>(values: Platform.environment),
         strictResolution: false,
       );
       print('GENERATED HTML:\n$output');

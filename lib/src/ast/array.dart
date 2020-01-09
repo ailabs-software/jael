@@ -11,7 +11,10 @@ class Array extends Expression {
   Array(this.lBracket, this.rBracket, this.items);
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) => items.map((e) => e.compute(memberResolver, scope)).toList();
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
+    return items.map<dynamic>( (dynamic e) => e.compute(memberResolver, scope)).toList();
+  }
 
   @override
   FileSpan get span {

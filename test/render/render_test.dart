@@ -21,7 +21,7 @@ void main() {
 
     try {
       document = jael.parseDocument(template, sourceUrl: 'test.jael');
-      scope = SymbolTable<dynamic>(values: {
+      scope = SymbolTable<dynamic>(values: <String, dynamic>{
         'csrf_token': 'foo',
         'profile': {
           'avatar': 'thosakwe.png',
@@ -67,7 +67,7 @@ void main() {
     var buf = CodeBuffer();
     //jael.scan(template, sourceUrl: 'test.jael').tokens.forEach(print);
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable<dynamic>(values: {
+    var scope = SymbolTable<dynamic>(values: <String, dynamic>{
       'pokemon': const _Pokemon('Darkrai', 'Dark'),
     });
 
@@ -107,7 +107,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable<dynamic>(values: {
+    var scope = SymbolTable<dynamic>(values: <String, dynamic>{
       'starters': starters,
     });
 
@@ -152,7 +152,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable<dynamic>(values: {
+    var scope = SymbolTable<dynamic>(values: <String, dynamic>{
       'starters': starters,
     });
 
@@ -198,7 +198,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable();
+    var scope = SymbolTable<dynamic>();
 
     const jael.Renderer().render(document, buf, scope);
     print(buf);
@@ -244,7 +244,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable();
+    var scope = SymbolTable<dynamic>();
 
     const jael.Renderer().render(document, buf, scope);
     print(buf);
@@ -269,7 +269,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable();
+    var scope = SymbolTable<dynamic>();
 
     const jael.Renderer().render(document, buf, scope);
     print(buf);
@@ -300,7 +300,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable<dynamic>(values: {
+    var scope = SymbolTable<dynamic>(values: <String, dynamic>{
       'account': _Account(isDisabled: true),
     });
 
@@ -327,7 +327,7 @@ void main() {
 
     var buf = CodeBuffer();
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
-    var scope = SymbolTable<dynamic>(values: {
+    var scope = SymbolTable<dynamic>(values: <String, dynamic>{
       'account': _Account(isDisabled: null),
     });
 

@@ -5,7 +5,7 @@ class JaelFormatter {
   final num tabSize;
   final bool insertSpaces;
   final int maxLineLength;
-  var _buffer = StringBuffer();
+  final StringBuffer _buffer = StringBuffer();
   int _level = 0;
   String _spaces;
 

@@ -25,18 +25,18 @@ class Call extends Expression {
   }
 
   List computePositional(IMemberResolver memberResolver, SymbolTable scope) =>
-      arguments.map((e) => e.compute(memberResolver, scope)).toList();
+      arguments.map<dynamic>((dynamic e) => e.compute(memberResolver, scope)).toList();
 
   Map<Symbol, dynamic> computeNamed(IMemberResolver memberResolver, SymbolTable scope) {
-    return namedArguments.fold<Map<Symbol, dynamic>>({}, (out, a) {
+    return namedArguments.fold<Map<Symbol, dynamic> >(<Symbol, dynamic>{}, (out, a) {
       return out..[Symbol(a.name.name)] = a.value.compute(memberResolver, scope);
     });
   }
 
   @override
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
-    var callee = target.compute(memberResolver, scope);
-    var args = computePositional(memberResolver, scope);
+    dynamic callee = target.compute(memberResolver, scope);
+    List<dynamic> args = computePositional(memberResolver, scope);
     var named = computeNamed(memberResolver, scope);
 
     return Function.apply(callee as Function, args, named);

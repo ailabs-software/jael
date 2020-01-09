@@ -18,7 +18,7 @@ void main() {
         foo
             .getAttribute('yes')
             .value
-            .compute(null, SymbolTable(values: {'no': 'maybe'})),
+            .compute(null, SymbolTable<dynamic>(values: <String, dynamic>{'no': 'maybe'})),
         'maybe');
   });
 

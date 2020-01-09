@@ -12,7 +12,7 @@ final RegExp _string1 = RegExp(
 final RegExp _string2 = RegExp(
     r'"((\\(["\\/bfnrt]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^"\\]))*"');
 
-Scanner scan(String text, {sourceUrl, bool asDSX = false}) =>
+Scanner scan(String text, {String sourceUrl, bool asDSX = false}) =>
     _Scanner(text, sourceUrl)..scan(asDSX: asDSX);
 
 abstract class Scanner {
@@ -93,7 +93,7 @@ class _Scanner implements Scanner {
 
   SpanScanner _scanner;
 
-  _Scanner(String text, sourceUrl) {
+  _Scanner(String text, String sourceUrl) {
     _scanner = SpanScanner(text, sourceUrl: sourceUrl);
   }
 

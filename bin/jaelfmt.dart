@@ -84,7 +84,7 @@ Future<void> formatStat(
       await formatPath(link, argResults);
       break;
     default:
-      throw 'No file or directory found at "$path".';
+      throw new Exception('No file or directory found at "$path".');
       break;
   }
 }

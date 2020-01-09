@@ -16,7 +16,7 @@ class _IsToken extends Matcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     return item is Token &&
         item.type == type &&
         (text == null || item.span.text == text);

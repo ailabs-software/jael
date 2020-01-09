@@ -8,7 +8,7 @@ import 'text/scanner.dart';
 
 /// Parses a Jael document.
 Document parseDocument(String text,
-    {sourceUrl, bool asDSX = false, void onError(JaelError error)}) {
+    {String sourceUrl, bool asDSX = false, void onError(JaelError error)}) {
   var scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
 
   //scanner.tokens.forEach(print);
@@ -113,8 +113,7 @@ class Renderer {
       registerCustomElement(element, buffer, memberResolver, childScope, html5);
       return;
     } else {
-      var customElementValue =
-          scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
+      dynamic customElementValue = scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
 
       if (customElementValue is Element) {
         renderCustomElement(element, buffer, memberResolver, childScope, html5);
@@ -125,7 +124,7 @@ class Renderer {
     buffer..write('<')..write(element.tagName.name);
 
     for (var attribute in element.attributes) {
-      var value = attribute.value?.compute(memberResolver, childScope);
+      dynamic value = attribute.value?.compute(memberResolver, childScope);
 
       if (value == false || value == null) continue;
 
@@ -142,8 +141,8 @@ class Renderer {
       if (value is Iterable) {
         msg = value.join(' ');
       } else if (value is Map) {
-        msg = value.keys.fold<StringBuffer>(StringBuffer(), (buf, k) {
-          var v = value[k];
+        msg = value.keys.fold<StringBuffer>(StringBuffer(), (StringBuffer buf, dynamic k) {
+          dynamic v = value[k];
           if (v == null) return buf;
           return buf..write('$k: $v;');
         }).toString();
@@ -208,8 +207,8 @@ class Renderer {
     }
 
     int i = 0;
-    for (var item in attribute.value.compute(memberResolver, scope)) {
-      var childScope = scope.createChild(values: {alias: item, indexAs: i++});
+    for (dynamic item in attribute.value.compute(memberResolver, scope)) {
+      SymbolTable<dynamic> childScope = scope.createChild(values: <String, dynamic>{alias: item, indexAs: i++});
       renderElement(strippedElement, buffer, memberResolver, childScope, html5);
     }
   }
@@ -218,7 +217,7 @@ class Renderer {
       Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
     var attribute = element.attributes.singleWhere((a) => a.name == 'if');
 
-    var vv = attribute.value.compute(memberResolver, scope);
+    dynamic vv = attribute.value.compute(memberResolver, scope);
 
     if (scope.resolve('!strict!')?.value == false) {
       vv = vv == true;
@@ -265,20 +264,21 @@ class Renderer {
 
   void renderSwitch(
       Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
-    var value = element.attributes
+    dynamic value = element.attributes
         .firstWhere((a) => a.name == 'value', orElse: () => null)
         ?.value
         ?.compute(memberResolver, scope);
 
-    var cases = element.children
+    Iterable<Element> cases = element.children
         .whereType<Element>()
         .where((c) => c.tagName.name == 'case');
 
-    for (var child in cases) {
-      var comparison = child.attributes
-          .firstWhere((a) => a.name == 'value', orElse: () => null)
-          ?.value
-          ?.compute(memberResolver, scope);
+    for (Element child in cases) {
+      dynamic comparison = child.attributes
+              .firstWhere((a) => a.name == 'value', orElse: () => null)
+              ?.value
+              ?.compute(memberResolver, scope);
+
       if (comparison == value) {
         for (int i = 0; i < child.children.length; i++) {
           var c = child.children.elementAt(i);
@@ -311,7 +311,7 @@ class Renderer {
         buffer.write(child.span.text);
       }
     } else if (child is Interpolation) {
-      var value = child.expression.compute(memberResolver, scope);
+      dynamic value = child.expression.compute(memberResolver, scope);
 
       if (value != null) {
         if (child.isRaw) {
@@ -357,12 +357,11 @@ class Renderer {
 
   void renderCustomElement(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
 
-    var template = scope.resolve(customElementName(memberResolver, element.tagName.name)).value
-        as RegularElement;
-    var renderAs = element.getAttribute('as')?.value?.compute(memberResolver, scope);
-    var attrs = element.attributes.where((a) => a.name != 'as');
+    RegularElement template = scope.resolve(customElementName(memberResolver, element.tagName.name)).value as RegularElement;
+    dynamic renderAs = element.getAttribute('as')?.value?.compute(memberResolver, scope);
+    Iterable<Attribute> attrs = element.attributes.where((a) => a.name != 'as');
 
-    for (var attribute in attrs) {
+    for (Attribute attribute in attrs) {
       if (attribute.name.startsWith('@')) {
         scope.create(attribute.name.substring(1),
             value: attribute.value?.compute(memberResolver, scope), constant: true);
