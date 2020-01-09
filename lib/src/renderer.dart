@@ -11,14 +11,14 @@ abstract class Renderer<T extends StringSink>
 {
   const Renderer();
 
+  /** Abstract method. Renders a real element */
+  void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
+
   /** Abstract method. Render element close */
   void renderElementClose(T output, Element element);
 
   /** Abstract method. Called before render of child element */
   void beforeRenderChildElement(T output);
-
-  /** Abstract method. Renders a real element */
-  void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
 
   /// Renders a [document] into the [output].
   ///
