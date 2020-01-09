@@ -16,7 +16,7 @@ class MemberExpression extends Expression {
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
     Object target = expression.compute(memberResolver, scope);
     if (op.span.text == '?.' && target == null) return null;
-    return memberResolver.getMember(scope, name.name);
+    return memberResolver.getMember(target, name.name);
   }
 
   @override
