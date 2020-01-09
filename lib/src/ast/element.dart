@@ -29,7 +29,7 @@ abstract class Element extends ElementChild {
     'hr',
     'img',
     'input',
-    'param',
+    'param'
   };
 
   Identifier get tagName;
