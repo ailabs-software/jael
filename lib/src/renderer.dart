@@ -1,182 +1,86 @@
 import 'dart:convert';
-import 'package:code_buffer/code_buffer.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'member_resolver.dart';
 import 'ast/ast.dart';
-import 'text/parser.dart';
-import 'text/scanner.dart';
 
-/// Parses a Jael document.
-Document parseDocument(String text,
-    {String sourceUrl, bool asDSX = false, void onError(JaelError error)}) {
-  var scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
+/** @fileoverview Abstract class which renders the document.
+ *    Can be subclassed to render non-HTML, such as to DOM differ */
 
-  //scanner.tokens.forEach(print);
-
-  if (scanner.errors.isNotEmpty && onError != null) {
-    scanner.errors.forEach(onError);
-  } else if (scanner.errors.isNotEmpty) throw scanner.errors.first;
-
-  var parser = Parser(scanner, asDSX: asDSX);
-  var doc = parser.parseDocument();
-
-  if (parser.errors.isNotEmpty && onError != null) {
-    parser.errors.forEach(onError);
-  } else if (parser.errors.isNotEmpty) throw parser.errors.first;
-
-  return doc;
-}
-
-class Renderer {
+/** Type parameter T is type of output object */
+abstract class Renderer<T extends StringSink>
+{
   const Renderer();
 
-  /// Render an error page.
-  static void errorDocument(Iterable<JaelError> errors, CodeBuffer buf) {
-    buf
-      ..writeln('<!DOCTYPE html>')
-      ..writeln('<html lang="en">')
-      ..indent()
-      ..writeln('<head>')
-      ..indent()
-      ..writeln(
-        '<meta name="viewport" content="width=device-width, initial-scale=1">',
-      )
-      ..writeln('<title>${errors.length} Error(s)</title>')
-      ..outdent()
-      ..writeln('</head>')
-      ..writeln('<body>')
-      ..writeln('<h1>${errors.length} Error(s)</h1>')
-      ..writeln('<ul>')
-      ..indent();
+  /** Abstract method. Render element close */
+  void renderElementClose(T output, Element element);
 
-    for (var error in errors) {
-      var type =
-          error.severity == JaelErrorSeverity.warning ? 'warning' : 'error';
-      buf
-        ..writeln('<li>')
-        ..indent()
-        ..writeln(
-            '<b>$type:</b> ${error.span.start.toolString}: ${error.message}')
-        ..writeln('<br>')
-        ..writeln(
-          '<span style="color: red;">' +
-              htmlEscape
-                  .convert(error.span.highlight(color: false))
-                  .replaceAll('\n', '<br>') +
-              '</span>',
-        )
-        ..outdent()
-        ..writeln('</li>');
-    }
+  /** Abstract method. Called before render of child element */
+  void beforeRenderChildElement(T output);
 
-    buf
-      ..outdent()
-      ..writeln('</ul>')
-      ..writeln('</body>')
-      ..writeln('</html>');
-  }
+  /** Abstract method. Renders a real element */
+  void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
 
-  /// Renders a [document] into the [buffer] as HTML.
+  /// Renders a [document] into the [output].
   ///
   /// If [strictResolution] is `false` (default: `true`), then undefined identifiers will return `null`
   /// instead of throwing.
-  void render(Document document, CodeBuffer buffer, SymbolTable scope,
-      {bool strictResolution = true, IMemberResolver memberResolver}) {
-
+  void render(Document document, T output, SymbolTable scope, {bool strictResolution = true, IMemberResolver memberResolver})
+  {
     scope.create('!strict!', value: strictResolution != false);
 
     if (memberResolver == null) {
       memberResolver = new DefaultMemberResolver();
     }
 
-    if (document.doctype != null) buffer.writeln(document.doctype.span.text);
-    renderElement(document.root, buffer, memberResolver, scope, document.doctype?.public == null);
+    if (document.doctype != null) {
+      output.writeln(document.doctype.span.text);
+    }
+
+    renderElement(document.root, output, memberResolver, scope, document.doctype?.public == null);
   }
 
-  void renderElement(Element element, CodeBuffer buffer,  IMemberResolver memberResolver, SymbolTable scope, bool html5) {
-
-    var childScope = scope.createChild();
+  void renderElement(Element element, T output,  IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
+    SymbolTable childScope = scope.createChild();
 
     if (element.attributes.any((a) => a.name == 'for-each')) {
-      renderForeach(element, buffer, memberResolver, childScope, html5);
+      renderForeach(element, output, memberResolver, childScope, html5);
       return;
     } else if (element.attributes.any((a) => a.name == 'if')) {
-      renderIf(element, buffer, memberResolver, childScope, html5);
+      renderIf(element, output, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'declare') {
-      renderDeclare(element, buffer, memberResolver, childScope, html5);
+      renderDeclare(element, output, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'switch') {
-      renderSwitch(element, buffer, memberResolver, childScope, html5);
+      renderSwitch(element, output, memberResolver, childScope, html5);
       return;
     } else if (element.tagName.name == 'element') {
-      registerCustomElement(element, buffer, memberResolver, childScope, html5);
+      registerCustomElement(element, output, memberResolver, childScope, html5);
       return;
     } else {
       dynamic customElementValue = scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
 
       if (customElementValue is Element) {
-        renderCustomElement(element, buffer, memberResolver, childScope, html5);
+        renderCustomElement(element, output, memberResolver, childScope, html5);
         return;
       }
     }
 
-    buffer..write('<')..write(element.tagName.name);
+    renderPrimaryElement(element, output, memberResolver, scope, childScope, html5);
+  }
 
-    for (var attribute in element.attributes) {
-      dynamic value = attribute.value?.compute(memberResolver, childScope);
-
-      if (value == false || value == null) continue;
-
-      buffer.write(' ${attribute.name}');
-
-      if (value == true) {
-        continue;
-      } else {
-        buffer.write('="');
-      }
-
-      String msg;
-
-      if (value is Iterable) {
-        msg = value.join(' ');
-      } else if (value is Map) {
-        msg = value.keys.fold<StringBuffer>(StringBuffer(), (StringBuffer buf, dynamic k) {
-          dynamic v = value[k];
-          if (v == null) return buf;
-          return buf..write('$k: $v;');
-        }).toString();
-      } else {
-        msg = value.toString();
-      }
-
-      buffer.write(attribute.isRaw ? msg : htmlEscape.convert(msg));
-      buffer.write('"');
-    }
-
-    if (element is SelfClosingElement) {
-      if (html5) {
-        buffer.writeln('>');
-      } else {
-        buffer.writeln('/>');
-      }
-    } else {
-      buffer.writeln('>');
-      buffer.indent();
-
-      for (int i = 0; i < element.children.length; i++) {
-        var child = element.children.elementAt(i);
-        renderElementChild(element, child, buffer, memberResolver, childScope, html5, i, element.children.length);
-      }
-
-      buffer.writeln();
-      buffer.outdent();
-      buffer.writeln('</${element.tagName.name}>');
+  void renderElementChildren(Element element, T output, IMemberResolver memberResolver, SymbolTable childScope, bool html5)
+  {
+    for (int i = 0; i < element.children.length; i++)
+    {
+      ElementChild child = element.children.elementAt(i);
+      renderElementChild(element, child, output, memberResolver, childScope, html5, i, element.children.length);
     }
   }
 
-  void renderForeach(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
-
+  void renderForeach(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     var attribute = element.attributes.singleWhere((a) => a.name == 'for-each');
     if (attribute.value == null) return;
 
@@ -209,12 +113,12 @@ class Renderer {
     int i = 0;
     for (dynamic item in attribute.value.compute(memberResolver, scope)) {
       SymbolTable<dynamic> childScope = scope.createChild(values: <String, dynamic>{alias: item, indexAs: i++});
-      renderElement(strippedElement, buffer, memberResolver, childScope, html5);
+      renderElement(strippedElement, output, memberResolver, childScope, html5);
     }
   }
 
-  void renderIf(
-      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+  void renderIf(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     var attribute = element.attributes.singleWhere((a) => a.name == 'if');
 
     dynamic vv = attribute.value.compute(memberResolver, scope);
@@ -223,7 +127,7 @@ class Renderer {
       vv = vv == true;
     }
 
-    var v = vv as bool;
+    bool v = vv as bool;
 
     if (!v) return;
 
@@ -246,10 +150,10 @@ class Renderer {
           element.gt2);
     }
 
-    renderElement(strippedElement, buffer, memberResolver, scope, html5);
+    renderElement(strippedElement, output, memberResolver, scope, html5);
   }
 
-  void renderDeclare(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  void renderDeclare(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
     for (var attribute in element.attributes) {
       scope.create(attribute.name,
@@ -258,12 +162,12 @@ class Renderer {
 
     for (int i = 0; i < element.children.length; i++) {
       var child = element.children.elementAt(i);
-      renderElementChild(element, child, buffer, memberResolver, scope, html5, i, element.children.length);
+      renderElementChild(element, child, output, memberResolver, scope, html5, i, element.children.length);
     }
   }
 
-  void renderSwitch(
-      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+  void renderSwitch(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     dynamic value = element.attributes
         .firstWhere((a) => a.name == 'value', orElse: () => null)
         ?.value
@@ -282,7 +186,7 @@ class Renderer {
       if (comparison == value) {
         for (int i = 0; i < child.children.length; i++) {
           var c = child.children.elementAt(i);
-          renderElementChild(element, c, buffer, memberResolver, scope, html5, i, child.children.length);
+          renderElementChild(element, c, output, memberResolver, scope, html5, i, child.children.length);
         }
 
         return;
@@ -295,41 +199,47 @@ class Renderer {
     if (defaultCase != null) {
       for (int i = 0; i < defaultCase.children.length; i++) {
         var child = defaultCase.children.elementAt(i);
-        renderElementChild(element, child, buffer, memberResolver, scope, html5, i, defaultCase.children.length);
+        renderElementChild(element, child, output, memberResolver, scope, html5, i, defaultCase.children.length);
       }
     }
   }
 
-  void renderElementChild(Element parent, ElementChild child, CodeBuffer buffer,
-      IMemberResolver memberResolver, SymbolTable scope, bool html5, int index, int total) {
+  void renderElementChild(Element parent, ElementChild child, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5, int index, int total)
+  {
     if (child is Text && parent?.tagName?.name != 'textarea') {
       if (index == 0) {
-        buffer.write(child.span.text.trimLeft());
-      } else if (index == total - 1) {
-        buffer.write(child.span.text.trimRight());
-      } else {
-        buffer.write(child.span.text);
+        output.write(child.span.text.trimLeft());
       }
-    } else if (child is Interpolation) {
+      else if (index == total - 1) {
+        output.write(child.span.text.trimRight());
+      }
+      else {
+        output.write(child.span.text);
+      }
+    }
+    else if (child is Interpolation) {
       dynamic value = child.expression.compute(memberResolver, scope);
 
       if (value != null) {
         if (child.isRaw) {
-          buffer.write(value);
+          output.write(value);
         } else {
-          buffer.write(htmlEscape.convert(value.toString()));
+          output.write(htmlEscape.convert(value.toString()));
         }
       }
     } else if (child is Element) {
-      if (buffer?.lastLine?.text?.isNotEmpty == true) buffer.writeln();
-      renderElement(child, buffer, memberResolver, scope, html5);
+      beforeRenderChildElement(output);
+      renderElement(child, output, memberResolver, scope, html5);
     }
   }
 
-  static String customElementName(IMemberResolver memberResolver, String name) => 'elements@$name';
+  static String customElementName(IMemberResolver memberResolver, String name)
+  {
+    return 'elements@$name';
+  }
 
-  void registerCustomElement(
-      Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
+  void registerCustomElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     if (element is! RegularElement) {
       throw JaelError(JaelErrorSeverity.error,
           "Custom elements cannot be self-closing.", element.span);
@@ -355,8 +265,8 @@ class Renderer {
     }
   }
 
-  void renderCustomElement(Element element, CodeBuffer buffer, IMemberResolver memberResolver, SymbolTable scope, bool html5) {
-
+  void renderCustomElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
+  {
     RegularElement template = scope.resolve(customElementName(memberResolver, element.tagName.name)).value as RegularElement;
     dynamic renderAs = element.getAttribute('as')?.value?.compute(memberResolver, scope);
     Iterable<Attribute> attrs = element.attributes.where((a) => a.name != 'as');
@@ -371,7 +281,7 @@ class Renderer {
     if (renderAs == false) {
       for (int i = 0; i < template.children.length; i++) {
         var child = template.children.elementAt(i);
-        renderElementChild(element, child, buffer, memberResolver, scope, html5, i, element.children.length);
+        renderElementChild(element, child, output, memberResolver, scope, html5, i, element.children.length);
       }
     } else {
       var tagName = renderAs?.toString() ?? 'div';
@@ -388,7 +298,7 @@ class Renderer {
           SyntheticIdentifier(tagName),
           template.gt2);
 
-      renderElement(syntheticElement, buffer, memberResolver, scope, html5);
+      renderElement(syntheticElement, output, memberResolver, scope, html5);
     }
   }
 }

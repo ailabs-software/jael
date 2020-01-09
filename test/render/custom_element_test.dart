@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'package:code_buffer/code_buffer.dart';
-import 'package:jael/jael.dart' as jael;
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/jael.dart' as jael;
+import 'package:jael/src/codebuffer_renderer.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -108,6 +109,6 @@ void main() {
 String render(String template, [Map<String, dynamic> values]) {
   var doc = jael.parseDocument(template, onError: (e) => throw e);
   var buffer = CodeBuffer();
-  const jael.Renderer().render(doc, buffer, new SymbolTable<dynamic>(values: values));
+  const CodeBufferRenderer().render(doc, buffer, new SymbolTable<dynamic>(values: values));
   return buffer.toString();
 }

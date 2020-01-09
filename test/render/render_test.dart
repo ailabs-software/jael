@@ -1,6 +1,7 @@
 import 'package:code_buffer/code_buffer.dart';
-import 'package:jael/jael.dart' as jael;
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/jael.dart' as jael;
+import 'package:jael/src/codebuffer_renderer.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -33,7 +34,7 @@ void main() {
     }
 
     expect(document, isNotNull);
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -71,7 +72,7 @@ void main() {
       'pokemon': const _Pokemon('Darkrai', 'Dark'),
     });
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -111,7 +112,7 @@ void main() {
       'starters': starters,
     });
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -156,7 +157,7 @@ void main() {
       'starters': starters,
     });
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -200,7 +201,7 @@ void main() {
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
     var scope = SymbolTable<dynamic>();
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -246,7 +247,7 @@ void main() {
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
     var scope = SymbolTable<dynamic>();
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -271,7 +272,7 @@ void main() {
     var document = jael.parseDocument(template, sourceUrl: 'test.jael');
     var scope = SymbolTable<dynamic>();
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(
@@ -304,7 +305,7 @@ void main() {
       'account': _Account(isDisabled: true),
     });
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(buf.toString().trim(), 'BAN HAMMER LOLOL');
@@ -331,7 +332,7 @@ void main() {
       'account': _Account(isDisabled: null),
     });
 
-    const jael.Renderer().render(document, buf, scope);
+    const CodeBufferRenderer().render(document, buf, scope);
     print(buf);
 
     expect(buf.toString().trim(), 'Weird...');

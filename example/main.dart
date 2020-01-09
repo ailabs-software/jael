@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:charcode/charcode.dart';
 import 'package:code_buffer/code_buffer.dart';
-import 'package:jael/jael.dart' as jael;
 import 'package:symbol_table/symbol_table.dart';
+import 'package:jael/jael.dart' as jael;
+import 'package:jael/src/codebuffer_renderer.dart';
 
 void main() {
   while (true) {
@@ -25,7 +26,7 @@ void main() {
       stderr.writeln('Could not parse the given text.');
     } else {
       var output = CodeBuffer();
-      const jael.Renderer().render(
+      const CodeBufferRenderer().render(
         document,
         output,
         new SymbolTable<dynamic>(values: Platform.environment),
