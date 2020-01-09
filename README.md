@@ -3,6 +3,6 @@ Jael templates, but not coupled to a reflection implementation (dart:mirrors). T
 
 From: https://github.com/angel-dart/jael/tree/master/jael
 
-# To use with package:reflectable use this package:
+## To use with package:reflectable use this package:
 https://github.com/bpilot/jael_reflectable_strategy
 
