@@ -48,19 +48,24 @@ abstract class Renderer<T extends StringSink>
     if (element.attributes.any((a) => a.name == 'for-each')) {
       renderForeach(element, output, memberResolver, childScope, html5);
       return;
-    } else if (element.attributes.any((a) => a.name == 'if')) {
+    }
+    else if (element.attributes.any((a) => a.name == 'if')) {
       renderIf(element, output, memberResolver, childScope, html5);
       return;
-    } else if (element.tagName.name == 'declare') {
+    }
+    else if (element.tagName.name == 'declare') {
       renderDeclare(element, output, memberResolver, childScope, html5);
       return;
-    } else if (element.tagName.name == 'switch') {
+    }
+    else if (element.tagName.name == 'switch') {
       renderSwitch(element, output, memberResolver, childScope, html5);
       return;
-    } else if (element.tagName.name == 'element') {
+    }
+    else if (element.tagName.name == 'element') {
       registerCustomElement(element, output, memberResolver, childScope, html5);
       return;
-    } else {
+    }
+    else {
       dynamic customElementValue = scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
 
       if (customElementValue is Element) {
