@@ -60,6 +60,7 @@ class RendererManager<T extends StringSink> {
   Document _getDocumentCached(String fileName)
   {
     if ( !_documentCache.containsKey(fileName) ) {
+      print("Jael RendererManager cache miss: ${fileName}");
       _documentCache[fileName] = _getDocument(fileName);
     }
     return _documentCache[fileName];
