@@ -19,6 +19,9 @@ class RendererManager<T extends StringSink> {
 
   IMemberResolver _memberResolver;
 
+  // Cache
+  Map<String, Document> _documentCache = <String, Document>{};
+
   RendererManager(Renderer<T> this._renderer);
 
   /** Do not use user input to determine base path */
@@ -45,7 +48,7 @@ class RendererManager<T extends StringSink> {
   /** Render to output */
   void renderFile(T output, String fileName, SymbolTable<dynamic> symbolTable)
   {
-    Document document = _getDocument(fileName);
+    Document document = _getDocumentCached(fileName);
 
     _renderer.render(
       document,
@@ -54,7 +57,14 @@ class RendererManager<T extends StringSink> {
       memberResolver: _memberResolver);
   }
 
-  /** Reads document. TODO: Cache this! */
+  Document _getDocumentCached(String fileName)
+  {
+    if ( !_documentCache.containsKey(fileName) ) {
+      _documentCache[fileName] = _getDocument(fileName);
+    }
+    return _documentCache[fileName];
+  }
+
   Document _getDocument(String fileName)
   {
     String templateText = _fileReadStrategy( _getFullPath(fileName) );
