@@ -24,7 +24,7 @@ class RendererManager<T extends StringSink> {
   /** Do not use user input to determine base path */
   void setBasePath(String basePath)
   {
-    if ( !_basePath.endsWith("/") ) {
+    if ( !basePath.endsWith("/") ) {
       throw new Exception("Base path must end with trialing /");
     }
     _basePath = basePath;
