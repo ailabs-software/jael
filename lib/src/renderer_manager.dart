@@ -13,8 +13,9 @@ class RendererManager<T extends StringSink> {
   final Renderer<T> _renderer;
 
   // State
-  String _basePath; // Null so that must be configured.
+  String _basePath = "";
 
+  /** May or may not be reading an actual file. Could be looking up from a map. */
   _FileReadCallbackStrategy _fileReadStrategy;
 
   IMemberResolver _memberResolver;
@@ -27,7 +28,7 @@ class RendererManager<T extends StringSink> {
   /** Do not use user input to determine base path */
   void setBasePath(String basePath)
   {
-    if ( !basePath.endsWith("/") ) {
+    if ( basePath.isNotEmpty && !basePath.endsWith("/") ) {
       throw new Exception("Base path must end with trialing /");
     }
     _basePath = basePath;
@@ -45,7 +46,7 @@ class RendererManager<T extends StringSink> {
     _memberResolver = memberResolver;
   }
 
-  /** Render to output */
+  /** Render from file (may not be an actual file) */
   void renderFile(T output, String fileName, SymbolTable<dynamic> symbolTable)
   {
     Document document = _getDocumentCached(fileName);
@@ -69,7 +70,6 @@ class RendererManager<T extends StringSink> {
   Document _getDocument(String fileName)
   {
     String templateText = _fileReadStrategy( _getFullPath(fileName) );
-
     return parseDocument(templateText);
   }
 
