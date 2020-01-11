@@ -40,6 +40,14 @@ class RendererManager<T extends StringSink> {
     _fileReadStrategy = fileReadStrategy;
   }
 
+  /** Sets to read from a map. Uses closure to hold reference to map */
+  void setFileMap(Map<String, String> fileMap)
+  {
+    setFileReadStrategy(
+      (String fileName) => fileMap.containsKey(fileName) ? fileMap[fileName] : throw new Exception("No such fileName in fileMap.")
+    );
+  }
+
   /** Set member resolver */
   void setMemberResolver(IMemberResolver memberResolver)
   {
