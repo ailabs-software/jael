@@ -54,6 +54,12 @@ class RendererManager<T extends StringSink> {
     _memberResolver = memberResolver;
   }
 
+  /** Clear cache */
+  void clearCache()
+  {
+    _documentCache.clear();
+  }
+
   /** Render from file (may not be an actual file) */
   void renderFile(T output, String fileName, SymbolTable<dynamic> symbolTable)
   {
