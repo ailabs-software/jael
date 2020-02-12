@@ -6,17 +6,9 @@ import "renderer.dart";
 
 /** @fileoverview Manages static renderer state */
 
-typedef String _FileReadCallbackStrategy(String fileName);
-
 class RendererManager<T extends StringSink> {
   // Renderer
   final Renderer<T> _renderer;
-
-  // State
-  String _basePath = "";
-
-  /** May or may not be reading an actual file. Could be looking up from a map. */
-  _FileReadCallbackStrategy _fileReadStrategy;
 
   IMemberResolver _memberResolver;
 
@@ -24,29 +16,6 @@ class RendererManager<T extends StringSink> {
   Map<String, Document> _documentCache = <String, Document>{};
 
   RendererManager(Renderer<T> this._renderer);
-
-  /** Do not use user input to determine base path */
-  void setBasePath(String basePath)
-  {
-    if ( basePath.isNotEmpty && !basePath.endsWith("/") ) {
-      throw new Exception("Base path must end with trialing /");
-    }
-    _basePath = basePath;
-  }
-
-  /** Sets file read strategy */
-  void setFileReadStrategy(_FileReadCallbackStrategy fileReadStrategy)
-  {
-    _fileReadStrategy = fileReadStrategy;
-  }
-
-  /** Sets to read from a map. Uses closure to hold reference to map */
-  void setFileMap(Map<String, String> fileMap)
-  {
-    setFileReadStrategy(
-      (String fileName) => fileMap.containsKey(fileName) ? fileMap[fileName] : throw new Exception("No such fileName in fileMap.")
-    );
-  }
 
   /** Set member resolver */
   void setMemberResolver(IMemberResolver memberResolver)
@@ -60,40 +29,24 @@ class RendererManager<T extends StringSink> {
     _documentCache.clear();
   }
 
-  /** Render from file (may not be an actual file) */
-  void renderFile(T output, String fileName, SymbolTable<dynamic> symbolTable)
+  void render(T output, String templateText, SymbolTable<dynamic> symbolTable)
   {
-    Document document = _getDocumentCached(fileName);
+    Document document = _getDocumentCached(templateText);
 
     _renderer.render(
-      document,
-      output,
-      symbolTable,
-      memberResolver: _memberResolver);
+        document,
+        output,
+        symbolTable,
+        memberResolver: _memberResolver);
   }
 
-  Document _getDocumentCached(String fileName)
+  /** First tries to obtain document from cache, then parses and chaches if not */
+  Document _getDocumentCached(String templateText)
   {
-    if ( !_documentCache.containsKey(fileName) ) {
-      print("Jael RendererManager cache miss: ${fileName}");
-      _documentCache[fileName] = _getDocument(fileName);
+    if ( !_documentCache.containsKey(templateText) ) {
+      print("Jael RendererManager cache miss.");
+      _documentCache[templateText] = parseDocument(templateText);
     }
-    return _documentCache[fileName];
-  }
-
-  Document _getDocument(String fileName)
-  {
-    String templateText = _fileReadStrategy( _getFullPath(fileName) );
-    return parseDocument(templateText);
-  }
-
-  /** Get full path */
-  String _getFullPath(String fileName)
-  {
-    if ( fileName.contains("..") ) {
-      throw new Exception();
-    }
-
-    return _basePath + fileName;
+    return _documentCache[templateText];
   }
 }

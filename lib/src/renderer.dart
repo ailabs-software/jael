@@ -258,15 +258,10 @@ abstract class Renderer<T extends StringSink>
           element.tagName.span);
     }
 
-    try {
-      var p = scope.isRoot ? scope : scope.parent;
-      p.create(customElementName(memberResolver, name), value: element, constant: true);
-    } on StateError {
-      throw JaelError(
-          JaelErrorSeverity.error,
-          "Cannot re-define element '$name' in this scope.",
-          element.getAttribute('name').span);
-    }
+
+    // AI LABS: Modified to allow overriding of custom eleents.
+    var p = scope.isRoot ? scope : scope.parent;
+    p.assign(customElementName(memberResolver, name), element);
   }
 
   void renderCustomElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
