@@ -44,7 +44,7 @@ class RendererManager<T extends StringSink> {
   Document _getDocumentCached(String templateText)
   {
     if ( !_documentCache.containsKey(templateText) ) {
-      print("Jael RendererManager cache miss.");
+      print("Jael renderer manager: adding template to cache.");
       _documentCache[templateText] = parseDocument(templateText);
     }
     return _documentCache[templateText];
