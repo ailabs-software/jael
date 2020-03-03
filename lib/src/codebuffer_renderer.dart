@@ -69,6 +69,13 @@ class CodeBufferRenderer extends Renderer<CodeBuffer>
     }
   }
 
+  /** Abstract method. Write a text literal from the template source */
+  @override
+  void writeTextLiteral(CodeBuffer output, String text)
+  {
+    output.write(text);
+  }
+
   /** Write an interpolated value, properly escaping */
   @override
   void writeInterpolatedValue(CodeBuffer output, Interpolation interpolation, dynamic value)

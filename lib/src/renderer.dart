@@ -13,6 +13,9 @@ abstract class Renderer<T extends StringSink>
   /** Abstract method. Renders a real element */
   void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
 
+  /** Abstract method. Write a text literal from the template source */
+  void writeTextLiteral(T output, String text);
+
   /** Abstract method. Write an interpolated value, properly escaping */
   void writeInterpolatedValue(T output, Interpolation interpolation, dynamic value);
   
@@ -215,13 +218,13 @@ abstract class Renderer<T extends StringSink>
   {
     if (child is Text && parent?.tagName?.name != 'textarea') {
       if (index == 0) {
-        output.write(child.span.text.trimLeft());
+        writeTextLiteral(output, child.span.text.trimLeft());
       }
       else if (index == total - 1) {
-        output.write(child.span.text.trimRight());
+        writeTextLiteral(output, child.span.text.trimRight());
       }
       else {
-        output.write(child.span.text);
+        writeTextLiteral(output, child.span.text);
       }
     }
     else if (child is Interpolation) {
