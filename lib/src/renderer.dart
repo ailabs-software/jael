@@ -68,6 +68,12 @@ abstract class Renderer<T extends StringSink>
       registerCustomElement(element, output, memberResolver, childScope, html5);
       return;
     }
+    else if (element.tagName.name == 'partial') {
+      // Allow <partial> to be used as the root element, without rendering itself.
+      // This enables Jael to render partials.
+      renderElementChildren(element, output, memberResolver, childScope, html5);
+      return;
+    }
     else {
       dynamic customElementValue = scope.resolve(customElementName(memberResolver, element.tagName.name))?.value;
 

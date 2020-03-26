@@ -29,18 +29,20 @@ class RendererManager<T extends StringSink> {
     _documentCache.clear();
   }
 
+  /** Renders template */
   void render(T output, String templateText, SymbolTable<dynamic> symbolTable)
   {
     Document document = _getDocumentCached(templateText);
 
     _renderer.render(
-        document,
-        output,
-        symbolTable,
-        memberResolver: _memberResolver);
+      document,
+      output,
+      symbolTable,
+      memberResolver: _memberResolver);
   }
 
-  /** First tries to obtain document from cache, then parses and chaches if not */
+  /** First tries to obtain document from cache, then parses and caches if not.
+   *  CAUTION: This can cause a memory leak if the template text changes dynamically. */
   Document _getDocumentCached(String templateText)
   {
     if ( !_documentCache.containsKey(templateText) ) {
