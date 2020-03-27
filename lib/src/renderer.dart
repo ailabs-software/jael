@@ -48,27 +48,27 @@ abstract class Renderer<T extends StringSink>
   {
     SymbolTable childScope = scope.createChild();
 
-    if (element.attributes.any((a) => a.name == 'for-each')) {
+    if (element.hasAttribute("for-each") ) {
       renderForeach(element, output, memberResolver, childScope, html5);
       return;
     }
-    else if (element.attributes.any((a) => a.name == 'if')) {
+    else if (element.hasAttribute("if") ) {
       renderIf(element, output, memberResolver, childScope, html5);
       return;
     }
-    else if (element.tagName.name == 'declare') {
+    else if (element.tagName.name == "declare") {
       renderDeclare(element, output, memberResolver, childScope, html5);
       return;
     }
-    else if (element.tagName.name == 'switch') {
+    else if (element.tagName.name == "switch") {
       renderSwitch(element, output, memberResolver, childScope, html5);
       return;
     }
-    else if (element.tagName.name == 'element') {
+    else if (element.tagName.name == "element") {
       registerCustomElement(element, output, memberResolver, childScope, html5);
       return;
     }
-    else if (element.tagName.name == 'partial') {
+    else if (element.tagName.name == "partial") {
       // Allow <partial> to be used as the root element, without rendering itself.
       // This enables Jael to render partials.
       renderElementChildren(element, output, memberResolver, childScope, html5);
@@ -135,7 +135,7 @@ abstract class Renderer<T extends StringSink>
 
   void renderIf(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
-    var attribute = element.attributes.singleWhere((a) => a.name == 'if');
+    Attribute attribute = element.getAttribute("if");
 
     dynamic vv = attribute.value.compute(memberResolver, scope);
 
@@ -147,7 +147,7 @@ abstract class Renderer<T extends StringSink>
 
     if (!v) return;
 
-    var otherAttributes = element.attributes.where((a) => a.name != 'if');
+    Iterable<Attribute> otherAttributes = element.attributes.where((a) => a.name != "if");
     Element strippedElement;
 
     if (element is SelfClosingElement) {

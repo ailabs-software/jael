@@ -38,8 +38,28 @@ abstract class Element extends ElementChild {
 
   Iterable<ElementChild> get children;
 
-  Attribute getAttribute(String name) =>
-      attributes.firstWhere((a) => a.name == name, orElse: () => null);
+  Attribute getAttribute(String name)
+  {
+    for (Attribute attribute in attributes)
+    {
+      if (attribute.name == name) {
+        return attribute;
+      }
+    }
+
+    return null;
+  }
+
+  bool hasAttribute(String name)
+  {
+    for (Attribute attribute in attributes)
+    {
+      if (attribute.name == name) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 class SelfClosingElement extends Element {
