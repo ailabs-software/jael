@@ -1,6 +1,14 @@
 import 'package:source_span/source_span.dart';
 
-/** @fileoverview Caches expensive operation of splitting text from source file to get token text, which is commonly done by Jael runtime */
+/** @fileoverview Caches expensive operation of splitting text from source file text to get token text, which is commonly done by Jael runtime (renderer).
+ *
+ *    Without this optimisation, rendering a content card template takes an average of 12.13ms.
+ *
+ *    With this optimisation in place, rendering a content template takes an average of 6.06ms.
+ *
+ *    In a brochure with 5 content cards, this saves 30ms to render that brochure.
+ *
+ * */
 
 class CachingFileSpan
 {
