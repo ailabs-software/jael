@@ -1,4 +1,4 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
@@ -46,5 +46,5 @@ class BinaryExpression extends Expression {
   }
 
   @override
-  FileSpan get span => left.span.expand(operator.span).expand(right.span);
+  CachingFileSpan get span => left.span.expand(operator.span).expand(right.span);
 }

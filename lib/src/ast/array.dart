@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -17,9 +17,9 @@ class Array extends Expression {
   }
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return items
-        .fold<FileSpan>(lBracket.span, (out, i) => out.expand(i.span))
+        .fold<CachingFileSpan>(lBracket.span, (out, i) => out.expand(i.span))
         .expand(rBracket.span);
   }
 }
@@ -31,7 +31,7 @@ class IndexerExpression extends Expression {
   IndexerExpression(this.target, this.lBracket, this.indexer, this.rBracket);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return target.span
         .expand(lBracket.span)
         .expand(indexer.span)

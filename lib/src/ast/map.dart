@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'expression.dart';
 import 'identifier.dart';
@@ -36,9 +36,9 @@ class MapLiteral extends Literal {
   }
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return pairs
-        .fold<FileSpan>(lCurly.span, (out, p) => out.expand(p.span))
+        .fold<CachingFileSpan>(lCurly.span, (out, p) => out.expand(p.span))
         .expand(rCurly.span);
   }
 }
@@ -50,7 +50,7 @@ class KeyValuePair extends AstNode {
   KeyValuePair(this.key, this.colon, this.value);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     if (colon == null) return key.span;
     return colon.span.expand(colon.span).expand(value.span);
   }

@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'token.dart';
 
@@ -19,7 +19,7 @@ class Negation extends Expression {
   Negation(this.exclamation, this.expression);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return exclamation.span.expand(expression.span);
   }
 

@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -28,10 +28,13 @@ class Identifier extends Expression {
     }
   }
 
-  String get name => id.span.text;
+  String get name
+  {
+    return id.span.text;
+  }
 
   @override
-  FileSpan get span => id.span;
+  CachingFileSpan get span => id.span;
 }
 
 class SyntheticIdentifier extends Identifier {
@@ -41,7 +44,7 @@ class SyntheticIdentifier extends Identifier {
   SyntheticIdentifier(this.name, [Token token]) : super(token);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     if (id != null) return id.span;
     throw UnsupportedError('Cannot get the span of a SyntheticIdentifier.');
   }

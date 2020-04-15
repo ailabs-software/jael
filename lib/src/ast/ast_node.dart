@@ -1,5 +1,5 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 
 abstract class AstNode {
-  FileSpan get span;
+  CachingFileSpan get span;
 }

@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'expression.dart';
 import 'identifier.dart';
 import 'token.dart';
@@ -20,5 +20,5 @@ class MemberExpression extends Expression {
   }
 
   @override
-  FileSpan get span => expression.span.expand(op.span).expand(name.span);
+  CachingFileSpan get span => expression.span.expand(op.span).expand(name.span);
 }

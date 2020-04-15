@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'expression.dart';
 import 'identifier.dart';
@@ -16,10 +16,10 @@ class Call extends Expression {
       this.namedArguments);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return arguments
-        .fold<FileSpan>(target.span, (out, a) => out.expand(a.span))
-        .expand(namedArguments.fold<FileSpan>(
+        .fold<CachingFileSpan>(target.span, (out, a) => out.expand(a.span))
+        .expand(namedArguments.fold<CachingFileSpan>(
             lParen.span, (out, a) => out.expand(a.span)))
         .expand(rParen.span);
   }
@@ -51,7 +51,7 @@ class NamedArgument extends AstNode {
   NamedArgument(this.name, this.colon, this.value);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return name.span.expand(colon.span).expand(value.span);
   }
 }

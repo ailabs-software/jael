@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:charcode/ascii.dart';
 import 'package:string_scanner/string_scanner.dart';
+import '../ast/caching_filespan.dart';
 import '../ast/ast.dart';
 
 final RegExp _whitespace = RegExp(r'[ \n\r\t]+');
@@ -166,7 +167,7 @@ class _Scanner implements Scanner {
           end = _scanner.state;
         }
 
-        var span = _scanner.spanFrom(start, end);
+        CachingFileSpan span = new CachingFileSpan( _scanner.spanFrom(start, end) );
 
         if (span.text.isNotEmpty) {
           tokens.add(Token(TokenType.text, span, null));
@@ -190,7 +191,7 @@ class _Scanner implements Scanner {
 
           _expressionPatterns.forEach((pattern, type) {
             if (_scanner.matches(pattern)) {
-              potential.add(Token(type, _scanner.lastSpan, _scanner.lastMatch));
+              potential.add(Token(type, new CachingFileSpan(_scanner.lastSpan), _scanner.lastMatch));
             }
           });
 

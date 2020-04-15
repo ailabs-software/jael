@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -12,7 +12,7 @@ class NumberLiteral extends Literal {
   NumberLiteral(this.number);
 
   @override
-  FileSpan get span => number.span;
+  CachingFileSpan get span => number.span;
 
   static num parse(String value) {
     var e = value.indexOf('E');
@@ -38,7 +38,7 @@ class HexLiteral extends Literal {
   HexLiteral(this.hex);
 
   @override
-  FileSpan get span => hex.span;
+  CachingFileSpan get span => hex.span;
 
   static num parse(String value) => int.parse(value.substring(2), radix: 16);
 

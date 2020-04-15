@@ -1,4 +1,4 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'element.dart';
 import 'identifier.dart';
@@ -12,7 +12,7 @@ class Document extends AstNode {
   Document(this.doctype, this.root);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     if (doctype == null) return root.span;
     return doctype.span.expand(root.span);
   }
@@ -24,7 +24,7 @@ class HtmlComment extends ElementChild {
   HtmlComment(this.htmlComment);
 
   @override
-  FileSpan get span => htmlComment.span;
+  CachingFileSpan get span => htmlComment.span;
 }
 
 class Text extends ElementChild {
@@ -33,7 +33,7 @@ class Text extends ElementChild {
   Text(this.text);
 
   @override
-  FileSpan get span => text.span;
+  CachingFileSpan get span => text.span;
 }
 
 class Doctype extends AstNode {
@@ -45,7 +45,7 @@ class Doctype extends AstNode {
       this.gt);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     if (public == null) {
       return lt.span.expand(doctype.span).expand(html.span).expand(gt.span);
     }

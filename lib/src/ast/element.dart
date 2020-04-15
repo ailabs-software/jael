@@ -1,4 +1,4 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'attribute.dart';
 import 'identifier.dart';
@@ -12,7 +12,7 @@ class TextNode extends ElementChild {
   TextNode(this.text);
 
   @override
-  FileSpan get span => text.span;
+  CachingFileSpan get span => text.span;
 }
 
 abstract class Element extends ElementChild {
@@ -78,8 +78,8 @@ class SelfClosingElement extends Element {
       this.lt, this.tagName, this.attributes, this.slash, this.gt);
 
   @override
-  FileSpan get span {
-    var start = attributes.fold<FileSpan>(
+  CachingFileSpan get span {
+    var start = attributes.fold<CachingFileSpan>(
         lt.span.expand(tagName.span), (out, a) => out.expand(a.span));
     return slash != null
         ? start.expand(slash.span).expand(gt.span)
@@ -105,16 +105,16 @@ class RegularElement extends Element {
       this.lt2, this.slash, this.tagName2, this.gt2);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     var openingTag = attributes
-        .fold<FileSpan>(
+        .fold<CachingFileSpan>(
             lt.span.expand(tagName.span), (out, a) => out.expand(a.span))
         .expand(gt.span);
 
     if (gt2 == null) return openingTag;
 
     return children
-        .fold<FileSpan>(openingTag, (out, c) => out.expand(c.span))
+        .fold<CachingFileSpan>(openingTag, (out, c) => out.expand(c.span))
         .expand(lt2.span)
         .expand(slash.span)
         .expand(tagName2.span)

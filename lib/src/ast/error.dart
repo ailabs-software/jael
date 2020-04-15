@@ -1,9 +1,9 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 
 class JaelError extends Error {
   final JaelErrorSeverity severity;
   final String message;
-  final FileSpan span;
+  final CachingFileSpan span;
 
   JaelError(this.severity, this.message, this.span);
 

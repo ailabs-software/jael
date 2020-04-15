@@ -1,7 +1,7 @@
 import 'package:charcode/charcode.dart';
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import '../ast/ast.dart';
 import 'expression.dart';
 import 'token.dart';
@@ -72,5 +72,5 @@ class StringLiteral extends Literal {
   }
 
   @override
-  FileSpan get span => string.span;
+  CachingFileSpan get span => string.span;
 }

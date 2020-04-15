@@ -1,4 +1,4 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 import 'element.dart';
 import 'expression.dart';
 import 'token.dart';
@@ -12,7 +12,7 @@ class Interpolation extends ElementChild {
   bool get isRaw => doubleCurlyL.span.text.endsWith('-');
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return doubleCurlyL.span.expand(expression.span).expand(doubleCurlyR.span);
   }
 }

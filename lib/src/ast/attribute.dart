@@ -1,4 +1,4 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'expression.dart';
 import 'identifier.dart';
@@ -20,7 +20,7 @@ class Attribute extends AstNode {
   String get name => string?.value ?? id.name;
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     if (equals == null) return nameNode.span;
     return nameNode.span.expand(equals?.span ?? nequ.span).expand(value.span);
   }

@@ -1,14 +1,15 @@
-import 'package:source_span/source_span.dart';
+import 'caching_filespan.dart';
 
 class Token {
   final TokenType type;
-  final FileSpan span;
+  final CachingFileSpan span;
   final Match match;
 
-  Token(this.type, this.span, this.match);
+  Token(TokenType this.type, CachingFileSpan this.span, Match this.match);
 
   @override
-  String toString() {
+  String toString()
+  {
     return '${span.start.toolString}: "${span.text}" => $type';
   }
 }

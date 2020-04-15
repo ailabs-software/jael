@@ -1,6 +1,6 @@
-import 'package:source_span/source_span.dart';
 import 'package:symbol_table/symbol_table.dart';
 import 'package:jael/src/member_resolver.dart';
+import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
@@ -12,7 +12,7 @@ class Conditional extends Expression {
       this.condition, this.question, this.ifTrue, this.colon, this.ifFalse);
 
   @override
-  FileSpan get span {
+  CachingFileSpan get span {
     return condition.span
         .expand(question.span)
         .expand(ifTrue.span)
