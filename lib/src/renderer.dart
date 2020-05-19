@@ -1,4 +1,4 @@
-import 'package:symbol_table/symbol_table.dart';
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
 import 'member_resolver.dart';
 import 'ast/ast.dart';
 

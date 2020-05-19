@@ -1,5 +1,5 @@
 import 'package:jael/jael.dart';
-import 'package:symbol_table/symbol_table.dart';
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
 import 'package:test/test.dart';
 
 void main() {

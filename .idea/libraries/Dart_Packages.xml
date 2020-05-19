@@ -128,6 +128,13 @@
             </list>
           </value>
         </entry>
+        <entry key="jclosure">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../jclosure/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="js">
           <value>
             <list>
@@ -303,13 +310,6 @@
             </list>
           </value>
         </entry>
-        <entry key="symbol_table">
-          <value>
-            <list>
-              <option value="/home/shopwindow/.pub-cache/hosted/pub.dartlang.org/symbol_table-2.0.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="term_glyph">
           <value>
             <list>
@@ -419,7 +419,6 @@
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.3/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.0.0/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.5/lib" />
-      <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/symbol_table-2.0.0/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.1.0/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/test-1.10.0/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.12/lib" />
@@ -429,6 +428,7 @@
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/watcher-0.9.7+13/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0/lib" />
       <root url="file:///home/shopwindow/.pub-cache/hosted/pub.dartlang.org/yaml-2.2.0/lib" />
+      <root url="file://$PROJECT_DIR$/../../jclosure/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -1,4 +1,4 @@
-import 'package:symbol_table/symbol_table.dart';
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
 import 'package:jael/src/member_resolver.dart';
 import 'caching_filespan.dart';
 import 'ast_node.dart';
