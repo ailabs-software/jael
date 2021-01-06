@@ -1,3 +1,4 @@
+import '../../jael.dart';
 import '../ast/ast.dart';
 import 'parselet/parselet.dart';
 import 'scanner.dart';
@@ -184,7 +185,7 @@ class Parser {
       return null;
     }
 
-    var tagName = parseIdentifier();
+    Identifier tagName = parseTagName();
 
     if (tagName == null) {
       errors.add(
@@ -193,7 +194,7 @@ class Parser {
     }
 
     List<Attribute> attributes = [];
-    var attribute = parseAttribute();
+    Attribute attribute = parseAttribute();
 
     while (attribute != null) {
       attributes.add(attribute);
@@ -221,7 +222,7 @@ class Parser {
       return null;
     }
 
-    var gt = _current;
+    Token gt = _current;
 
     // Implicit self-closing
     if (Element.selfClosing.contains(tagName.name)) {
@@ -254,7 +255,8 @@ class Parser {
       return null;
     }
 
-    var slash = _current, tagName2 = parseIdentifier();
+    Token slash = _current;
+    Identifier tagName2 = parseTagName();
 
     if (tagName2 == null) {
       errors.add(JaelError(
@@ -267,7 +269,7 @@ class Parser {
     if (tagName2.name != tagName.name) {
       errors.add(JaelError(
           JaelErrorSeverity.error,
-          'Mismatched closing tags. Expected "${tagName.span.text}"; got "${tagName2.name}" instead.',
+          'Mismatched closing tags. Expected "${tagName.name}"; got "${tagName2.name}" instead.',
           lt2.span));
       return null;
     }
@@ -372,8 +374,30 @@ class Parser {
     return null;
   }
 
-  Identifier parseIdentifier() =>
-      next(TokenType.id) ? Identifier(_current) : null;
+  Identifier parseIdentifier()
+  {
+    return next(TokenType.id) ? new Identifier(_current) : null;
+  }
+
+  Identifier parseTagName()
+  {
+    if ( next(TokenType.id) ) {
+      Token tagNameToken = _current;
+      Token tagNameExtensionToken = null;
+      if ( next(TokenType.colon) ) {
+        if ( next(TokenType.id) ) {
+          tagNameExtensionToken = _current;
+        }
+        else {
+          errors.add(new JaelError(JaelErrorSeverity.error, "Missing tag name extension following tag name because of colon.", tagNameToken.span));
+        }
+      }
+      return new Identifier(tagNameToken, tagNameExtensionToken);
+    }
+    else {
+      return null;
+    }
+  }
 
   KeyValuePair parseKeyValuePair() {
     var key = parseExpression(0);
