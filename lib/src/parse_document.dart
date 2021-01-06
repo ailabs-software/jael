@@ -7,8 +7,6 @@ Document parseDocument(String text, {String sourceUrl, bool asDSX = false, void 
 {
   var scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
 
-  //scanner.tokens.forEach(print);
-
   if (scanner.errors.isNotEmpty && onError != null) {
     scanner.errors.forEach(onError);
   }
