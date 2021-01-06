@@ -38,6 +38,11 @@ abstract class Element extends ElementChild {
 
   Iterable<ElementChild> get children;
 
+  Iterable<Element> get childElements
+  {
+    return children.whereType<Element>();
+  }
+
   Attribute getAttribute(String name)
   {
     for (Attribute attribute in attributes)
@@ -59,6 +64,18 @@ abstract class Element extends ElementChild {
       }
     }
     return false;
+  }
+
+  /** Not used by Jael's HTML renderer, but is used by Ellaments */
+  Element getChildByTagName(String name)
+  {
+    for (Element child in childElements)
+    {
+      if (child.tagName.name == name) {
+        return child;
+      }
+    }
+    throw new Exception("No immediate child of <${tagName.name}> by named <${name}>");
   }
 }
 
