@@ -4,9 +4,13 @@ import 'attribute.dart';
 import 'identifier.dart';
 import 'token.dart';
 
-abstract class ElementChild extends AstNode {}
+abstract class ElementChild extends AstNode
+{
 
-class TextNode extends ElementChild {
+}
+
+class TextNode extends ElementChild
+{
   final Token text;
 
   TextNode(this.text);
@@ -15,7 +19,8 @@ class TextNode extends ElementChild {
   CachingFileSpan get span => text.span;
 }
 
-abstract class Element extends ElementChild {
+abstract class Element extends ElementChild
+{
   static const Set<String> selfClosing = {
     'include',
     'base',
@@ -55,6 +60,15 @@ abstract class Element extends ElementChild {
     return null;
   }
 
+  Attribute getRequiredAttribute(String name)
+  {
+    Attribute attribute = getAttribute(name);
+    if (attribute == null) {
+      throw new Exception("The attribute \"${name}\" of <${tagName.name}> is required, but is missing.");
+    }
+    return attribute;
+  }
+
   bool hasAttribute(String name)
   {
     for (Attribute attribute in attributes)
@@ -77,10 +91,21 @@ abstract class Element extends ElementChild {
     }
     throw new Exception("No immediate child of <${tagName.name}> by named <${name}>");
   }
+
+  /** Not used by Jael's renderer. Gets children by tag name. */
+  Iterable<Element> getChildrenByTagName(String name)
+  {
+    return childElements.where( (Element element) => element.tagName.name == name );
+  }
 }
 
-class SelfClosingElement extends Element {
-  final Token lt, slash, gt;
+class SelfClosingElement extends Element
+{
+  final Token lt;
+
+  final Token slash;
+
+  final Token gt;
 
   @override
   final Identifier tagName;
@@ -95,8 +120,9 @@ class SelfClosingElement extends Element {
       this.lt, this.tagName, this.attributes, this.slash, this.gt);
 
   @override
-  CachingFileSpan get span {
-    var start = attributes.fold<CachingFileSpan>(
+  CachingFileSpan get span
+  {
+    CachingFileSpan start = attributes.fold<CachingFileSpan>(
         lt.span.expand(tagName.span), (out, a) => out.expand(a.span));
     return slash != null
         ? start.expand(slash.span).expand(gt.span)
@@ -104,8 +130,17 @@ class SelfClosingElement extends Element {
   }
 }
 
-class RegularElement extends Element {
-  final Token lt, gt, lt2, slash, gt2;
+class RegularElement extends Element
+{
+  final Token lt;
+
+  final Token gt;
+
+  final Token lt2;
+
+  final Token slash;
+
+  final Token gt2;
 
   @override
   final Identifier tagName;
@@ -122,8 +157,9 @@ class RegularElement extends Element {
       this.lt2, this.slash, this.tagName2, this.gt2);
 
   @override
-  CachingFileSpan get span {
-    var openingTag = attributes
+  CachingFileSpan get span
+  {
+    CachingFileSpan openingTag = attributes
         .fold<CachingFileSpan>(
             lt.span.expand(tagName.span), (out, a) => out.expand(a.span))
         .expand(gt.span);

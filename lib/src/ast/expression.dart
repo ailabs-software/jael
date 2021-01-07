@@ -4,15 +4,23 @@ import 'caching_filespan.dart';
 import 'ast_node.dart';
 import 'token.dart';
 
-abstract class Expression extends AstNode {
+abstract class Expression extends AstNode
+{
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope);
+
+  String computeAsStringLiteral()
+  {
+    return compute(null, null) as String;
+  }
 }
 
-abstract class Literal extends Expression {
+abstract class Literal extends Expression
+{
 
 }
 
-class Negation extends Expression {
+class Negation extends Expression
+{
   final Token exclamation;
   final Expression expression;
 
