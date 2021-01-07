@@ -48,6 +48,11 @@ abstract class Element extends ElementChild
     return children.whereType<Element>();
   }
 
+  Iterable<String> get attributeNames
+  {
+    return attributes.map( (Attribute attribute) => attribute.name );
+  }
+
   Attribute getAttribute(String name)
   {
     for (Attribute attribute in attributes)
