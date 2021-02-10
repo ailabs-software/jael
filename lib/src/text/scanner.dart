@@ -22,7 +22,7 @@ abstract class Scanner {
   List<Token> get tokens;
 }
 
-final RegExp _htmlComment = RegExp(r'<!--[^$]*-->');
+final RegExp _htmlComment = RegExp(r'<!--[^>]*-->');
 
 final Map<Pattern, TokenType> _expressionPatterns = {
 //final Map<Pattern, TokenType> _htmlPatterns = {
