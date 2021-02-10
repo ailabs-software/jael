@@ -7,7 +7,7 @@ import '../ast/ast.dart';
 final RegExp _whitespace = RegExp(r'[ \n\r\t]+');
 
 final RegExp _id =
-    RegExp(r'@?(([A-Za-z][A-Za-z0-9_]*-)*([A-Za-z][A-Za-z0-9_]*))');
+    RegExp(r'@?(([A-Za-z_][A-Za-z0-9_]*-)*([A-Za-z_][A-Za-z0-9_]*))');
 final RegExp _string1 = RegExp(
     r"'((\\(['\\/bfnrt]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^'\\]))*'");
 final RegExp _string2 = RegExp(
