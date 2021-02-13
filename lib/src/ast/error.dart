@@ -11,7 +11,7 @@ class JaelError extends Error {
   String toString() {
     var label = severity == JaelErrorSeverity.warning ? 'warning' : 'error';
     return '$label: ${span.start.toolString}: $message\n' +
-        span.highlight(color: true);
+        span.highlight(color: false);
   }
 }
 

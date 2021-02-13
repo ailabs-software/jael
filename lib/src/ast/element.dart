@@ -3,6 +3,7 @@ import 'ast_node.dart';
 import 'attribute.dart';
 import 'identifier.dart';
 import 'token.dart';
+import 'error.dart';
 
 abstract class ElementChild extends AstNode
 {
@@ -69,7 +70,7 @@ abstract class Element extends ElementChild
   {
     Attribute attribute = getAttribute(name);
     if (attribute == null) {
-      throw new Exception("The attribute \"${name}\" of <${tagName.name}> is required, but is missing.");
+      throw new JaelError(JaelErrorSeverity.error, "The attribute \"${name}\" of <${tagName.name}> is required, but is missing.", span);
     }
     return attribute;
   }
