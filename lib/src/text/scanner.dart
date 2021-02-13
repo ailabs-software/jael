@@ -4,14 +4,12 @@ import 'package:string_scanner/string_scanner.dart';
 import '../ast/caching_filespan.dart';
 import '../ast/ast.dart';
 
-final RegExp _whitespace = RegExp(r'[ \n\r\t]+');
-
-final RegExp _id =
-    RegExp(r'@?(([A-Za-z_][A-Za-z0-9_]*-)*([A-Za-z_][A-Za-z0-9_]*))');
-final RegExp _string1 = RegExp(
-    r"'((\\(['\\/bfnrt\$]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^'\\]))*'");
-final RegExp _string2 = RegExp(
-    r'"((\\(["\\/bfnrt\$]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^"\\]))*"');
+final RegExp _whitespace = new RegExp(r'[ \n\r\t]+');
+final RegExp _id = new RegExp(r'@?(([A-Za-z_][A-Za-z0-9_]*-)*([A-Za-z_][A-Za-z0-9_]*))');
+final RegExp _string1 = new RegExp(r"'((\\(['\\/bfnrt\$]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^'\\]))*'");
+final RegExp _string2 = new RegExp(r'"((\\(["\\/bfnrt\$]|(u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))|([^"\\]))*"');
+// Thanks to: https://github.com/stevemao/html-comment-regex/blob/master/index.js
+final RegExp _htmlComment = new RegExp(r'<!--([\s\S]*?)-->');
 
 Scanner scan(String text, {String sourceUrl, bool asDSX = false}) =>
     _Scanner(text, sourceUrl)..scan(asDSX: asDSX);
@@ -21,8 +19,6 @@ abstract class Scanner {
 
   List<Token> get tokens;
 }
-
-final RegExp _htmlComment = RegExp(r'<!--[^>]*-->');
 
 final Map<Pattern, TokenType> _expressionPatterns = {
 //final Map<Pattern, TokenType> _htmlPatterns = {
