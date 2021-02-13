@@ -4,15 +4,19 @@ import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
-class Conditional extends Expression {
-  final Expression condition, ifTrue, ifFalse;
-  final Token question, colon;
+class Conditional extends Expression
+{
+  final Expression condition;
+  final Expression ifTrue;
+  final Expression ifFalse;
+  final Token question;
+  final Token colon;
 
-  Conditional(
-      this.condition, this.question, this.ifTrue, this.colon, this.ifFalse);
+  Conditional(this.condition, this.question, this.ifTrue, this.colon, this.ifFalse);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     return condition.span
         .expand(question.span)
         .expand(ifTrue.span)
@@ -21,7 +25,8 @@ class Conditional extends Expression {
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     var v = condition.compute(memberResolver, scope) as bool;
 
     if (scope.resolve('!strict!')?.value == false) {
@@ -29,5 +34,13 @@ class Conditional extends Expression {
     }
 
     return v ? ifTrue.compute(memberResolver, scope) : ifFalse.compute(memberResolver, scope);
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    condition.assertIsValidDartExpression();
+    ifTrue.assertIsValidDartExpression();
+    ifFalse.assertIsValidDartExpression();
   }
 }

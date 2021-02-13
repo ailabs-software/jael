@@ -14,8 +14,16 @@ class Identifier extends Expression
   Identifier(Token this.id, [Token this.extension]);
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
-    switch (name) {
+  CachingFileSpan get span
+  {
+    return id.span;
+  }
+
+  @override
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
+    switch (name)
+    {
       case 'null':
         return null;
       case 'true':
@@ -44,7 +52,10 @@ class Identifier extends Expression
   }
 
   @override
-  CachingFileSpan get span => id.span;
+  void assertIsValidDartExpression()
+  {
+    // No-op implementation. Assuming to be valid Dart if parsed to Jael successfully.
+  }
 }
 
 class SyntheticIdentifier extends Identifier
@@ -55,8 +66,17 @@ class SyntheticIdentifier extends Identifier
   SyntheticIdentifier(String this.name, [Token token]) : super(token);
 
   @override
-  CachingFileSpan get span {
-    if (id != null) return id.span;
-    throw UnsupportedError('Cannot get the span of a SyntheticIdentifier.');
+  CachingFileSpan get span
+  {
+    if (id != null) {
+      return id.span;
+    }
+    throw new UnsupportedError('Cannot get the span of a SyntheticIdentifier.');
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    // No-op implementation. Assuming to be valid Dart if parsed to Jael successfully.
   }
 }

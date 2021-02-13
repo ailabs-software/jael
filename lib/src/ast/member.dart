@@ -5,7 +5,8 @@ import 'expression.dart';
 import 'identifier.dart';
 import 'token.dart';
 
-class MemberExpression extends Expression {
+class MemberExpression extends Expression
+{
   final Expression expression;
   final Token op;
   final Identifier name;
@@ -13,12 +14,23 @@ class MemberExpression extends Expression {
   MemberExpression(this.expression, this.op, this.name);
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     Object target = expression.compute(memberResolver, scope);
     if (op.span.text == '?.' && target == null) return null;
     return memberResolver.getMember(target, name.name);
   }
 
   @override
-  CachingFileSpan get span => expression.span.expand(op.span).expand(name.span);
+  CachingFileSpan get span
+  {
+    return expression.span.expand(op.span).expand(name.span);
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    expression.assertIsValidDartExpression();
+    name.assertIsValidDartExpression();
+  }
 }

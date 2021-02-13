@@ -29,12 +29,14 @@ class Negation extends Expression
   Negation(this.exclamation, this.expression);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     return exclamation.span.expand(expression.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     var v = expression.compute(memberResolver, scope) as bool;
 
     if (scope.resolve('!strict!')?.value == false) {
@@ -42,5 +44,11 @@ class Negation extends Expression
     }
 
     return !v;
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    expression.assertIsValidDartExpression();
   }
 }

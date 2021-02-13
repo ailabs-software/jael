@@ -6,11 +6,13 @@ import 'expression.dart';
 import 'identifier.dart';
 import 'token.dart';
 
-class MapLiteral extends Literal {
-  final Token lCurly, rCurly;
+class MapLiteral extends Literal
+{
+  final Token lCurly;
   final List<KeyValuePair> pairs;
+  final Token rCurly;
 
-  MapLiteral(this.lCurly, this.pairs, this.rCurly);
+  MapLiteral(Token this.lCurly, List<KeyValuePair> this.pairs, Token this.rCurly);
 
   @override
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
@@ -36,21 +38,30 @@ class MapLiteral extends Literal {
   }
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     return pairs
         .fold<CachingFileSpan>(lCurly.span, (out, p) => out.expand(p.span))
         .expand(rCurly.span);
   }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    // No-op implementation. Assuming to be valid Dart if parsed to Jael successfully.
+  }
 }
 
-class KeyValuePair extends AstNode {
+class KeyValuePair extends AstNode
+{
   final Expression key, value;
   final Token colon;
 
   KeyValuePair(this.key, this.colon, this.value);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     if (colon == null) return key.span;
     return colon.span.expand(colon.span).expand(value.span);
   }

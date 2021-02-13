@@ -6,7 +6,7 @@ import '../ast/ast.dart';
 import 'expression.dart';
 import 'token.dart';
 
-/** Used by StringLiteral.assertIsValidDartExpression()() */
+/** Used by StringLiteral.assertIsValidDartExpression(). Only used when transpiling to Dart. */
 final RegExp _matchUnescapedDollarSign = new RegExp(r"(?<!\\)\$");
 
 class StringLiteral extends Literal
@@ -74,6 +74,12 @@ class StringLiteral extends Literal
   }
 
   @override
+  CachingFileSpan get span
+  {
+    return string.span;
+  }
+
+  @override
   dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
   {
     return value;
@@ -82,16 +88,11 @@ class StringLiteral extends Literal
   @override
   void assertIsValidDartExpression()
   {
+    // This feature is used only when transpiling to Dart (not by normal Jael renderer):
     // A string containing an unescaped $ cannot be trivially verified to be syntactically valid Dart code,
     // so for the sake of simplicity, we will force all strings to have dollar sign escaped when transpiling to Dart.
     if ( _matchUnescapedDollarSign.hasMatch(string.span.text) ) {
       throw new JaelError("To ensure your string literal is valid Dart, dollar sign (\$) must be escaped with a preceding forward slash.", span);
     }
-  }
-
-  @override
-  CachingFileSpan get span
-  {
-    return string.span;
   }
 }

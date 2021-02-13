@@ -6,17 +6,18 @@ import 'expression.dart';
 import 'identifier.dart';
 import 'token.dart';
 
-class Call extends Expression {
+class Call extends Expression
+{
   final Expression target;
   final Token lParen, rParen;
   final List<Expression> arguments;
   final List<NamedArgument> namedArguments;
 
-  Call(this.target, this.lParen, this.rParen, this.arguments,
-      this.namedArguments);
+  Call(this.target, this.lParen, this.rParen, this.arguments, this.namedArguments);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     return arguments
         .fold<CachingFileSpan>(target.span, (out, a) => out.expand(a.span))
         .expand(namedArguments.fold<CachingFileSpan>(
@@ -34,16 +35,35 @@ class Call extends Expression {
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     dynamic callee = target.compute(memberResolver, scope);
     List<dynamic> args = computePositional(memberResolver, scope);
     var named = computeNamed(memberResolver, scope);
 
     return Function.apply(callee as Function, args, named);
   }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    target.assertIsValidDartExpression();
+
+    for (Expression argument in arguments)
+    {
+      argument.assertIsValidDartExpression();
+    }
+
+    for (NamedArgument namedArgument in namedArguments)
+    {
+      namedArgument.name.assertIsValidDartExpression();
+      namedArgument.value.assertIsValidDartExpression();
+    }
+  }
 }
 
-class NamedArgument extends AstNode {
+class NamedArgument extends AstNode
+{
   final Identifier name;
   final Token colon;
   final Expression value;
@@ -51,7 +71,8 @@ class NamedArgument extends AstNode {
   NamedArgument(this.name, this.colon, this.value);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     return name.span.expand(colon.span).expand(value.span);
   }
 }

@@ -4,18 +4,28 @@ import 'package:jael/src/member_resolver.dart';
 import 'expression.dart';
 import 'token.dart';
 
-class BinaryExpression extends Expression {
-  final Expression left, right;
+class BinaryExpression extends Expression
+{
+  final Expression left;
+  final Expression right;
   final Token operator;
 
   BinaryExpression(this.left, this.operator, this.right);
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  CachingFileSpan get span
+  {
+    return left.span.expand(operator.span).expand(right.span);
+  }
+
+  @override
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     dynamic l = left.compute(memberResolver, scope);
     dynamic r = right.compute(memberResolver, scope);
 
-    switch (operator?.type) {
+    switch (operator?.type)
+    {
       case TokenType.asterisk:
         return l * r;
       case TokenType.slash:
@@ -40,11 +50,14 @@ class BinaryExpression extends Expression {
       case TokenType.elvis:
         return l ?? r;
       default:
-        throw UnsupportedError(
-            'Unsupported binary operator: "${operator?.span?.text ?? "<null>"}".');
+        throw UnsupportedError('Unsupported binary operator: "${operator?.span?.text ?? "<null>"}".');
     }
   }
 
   @override
-  CachingFileSpan get span => left.span.expand(operator.span).expand(right.span);
+  void assertIsValidDartExpression()
+  {
+    left.assertIsValidDartExpression();
+    right.assertIsValidDartExpression();
+  }
 }

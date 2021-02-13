@@ -5,16 +5,21 @@ import 'caching_filespan.dart';
 import 'expression.dart';
 import 'token.dart';
 
-class NumberLiteral extends Literal {
+class NumberLiteral extends Literal
+{
   final Token number;
   num _value;
 
   NumberLiteral(this.number);
 
   @override
-  CachingFileSpan get span => number.span;
+  CachingFileSpan get span
+  {
+    return number.span;
+  }
 
-  static num parse(String value) {
+  static num parse(String value)
+  {
     var e = value.indexOf('E');
     e != -1 ? e : e = value.indexOf('e');
 
@@ -26,24 +31,45 @@ class NumberLiteral extends Literal {
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     return _value ??= parse(number.span.text);
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    // No-op implementation. Assuming to be valid Dart if parsed to Jael successfully.
   }
 }
 
-class HexLiteral extends Literal {
+class HexLiteral extends Literal
+{
   final Token hex;
   num _value;
 
   HexLiteral(this.hex);
 
   @override
-  CachingFileSpan get span => hex.span;
+  CachingFileSpan get span
+  {
+    return hex.span;
+  }
 
-  static num parse(String value) => int.parse(value.substring(2), radix: 16);
+  static num parse(String value)
+  {
+    return int.parse(value.substring(2), radix: 16);
+  }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope) {
+  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  {
     return _value ??= parse(hex.span.text);
+  }
+
+  @override
+  void assertIsValidDartExpression()
+  {
+    // No-op implementation. Assuming to be valid Dart if parsed to Jael successfully.
   }
 }
