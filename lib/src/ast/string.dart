@@ -91,7 +91,8 @@ class StringLiteral extends Literal
     // This feature is used only when transpiling to Dart (not by normal Jael renderer):
     // A string containing an unescaped $ cannot be trivially verified to be syntactically valid Dart code,
     // so for the sake of simplicity, we will force all strings to have dollar sign escaped when transpiling to Dart.
-    if ( _matchUnescapedDollarSign.hasMatch(string.span.text) ) {
+    // Note: We remove double-slashes before checking, otherwise regexp won't see "\\$" as unescaped.
+    if ( _matchUnescapedDollarSign.hasMatch( string.span.text.replaceAll(r"\\", "") ) ) {
       throw new JaelError("To ensure your string literal is valid Dart, dollar sign (\$) must be escaped with a preceding forward slash.", span);
     }
   }
