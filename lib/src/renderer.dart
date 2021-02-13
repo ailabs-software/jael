@@ -254,15 +254,13 @@ abstract class Renderer<T extends StringSink>
   void registerCustomElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
     if (element is! RegularElement) {
-      throw JaelError(JaelErrorSeverity.error,
-          "Custom elements cannot be self-closing.", element.span);
+      throw new JaelError("Custom elements cannot be self-closing.", element.span);
     }
 
     var name = element.getAttribute('name')?.value?.compute(memberResolver, scope)?.toString();
 
     if (name == null) {
-      throw JaelError(
-          JaelErrorSeverity.error,
+      throw new JaelError(
           "Attribute 'name' is required when registering a custom element.",
           element.tagName.span);
     }

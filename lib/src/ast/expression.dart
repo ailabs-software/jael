@@ -12,6 +12,8 @@ abstract class Expression extends AstNode
   {
     return compute(null, null) as String;
   }
+
+  void assertIsValidDartExpression();
 }
 
 abstract class Literal extends Expression

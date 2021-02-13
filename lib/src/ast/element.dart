@@ -70,7 +70,7 @@ abstract class Element extends ElementChild
   {
     Attribute attribute = getAttribute(name);
     if (attribute == null) {
-      throw new JaelError(JaelErrorSeverity.error, "The attribute \"${name}\" of <${tagName.name}> is required, but is missing.", span);
+      throw new JaelError("The attribute \"${name}\" of <${tagName.name}> is required, but is missing.", span);
     }
     return attribute;
   }

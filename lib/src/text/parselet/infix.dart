@@ -32,14 +32,12 @@ class ConditionalParselet implements InfixParselet {
     var ifTrue = parser.parseExpression(0);
 
     if (ifTrue == null) {
-      parser.errors.add(JaelError(JaelErrorSeverity.error,
-          'Missing expression in conditional expression.', token.span));
+      parser.errors.add(new JaelError('Missing expression in conditional expression.', token.span));
       return null;
     }
 
     if (!parser.next(TokenType.colon)) {
-      parser.errors.add(JaelError(JaelErrorSeverity.error,
-          'Missing ":" in conditional expression.', ifTrue.span));
+      parser.errors.add(new JaelError('Missing ":" in conditional expression.', ifTrue.span));
       return null;
     }
 
@@ -47,8 +45,7 @@ class ConditionalParselet implements InfixParselet {
     var ifFalse = parser.parseExpression(0);
 
     if (ifFalse == null) {
-      parser.errors.add(JaelError(JaelErrorSeverity.error,
-          'Missing expression in conditional expression.', colon.span));
+      parser.errors.add(JaelError('Missing expression in conditional expression.', colon.span));
       return null;
     }
 
@@ -68,8 +65,7 @@ class BinaryParselet implements InfixParselet {
 
     if (right == null) {
       if (token.type != TokenType.gt) {
-        parser.errors.add(JaelError(
-            JaelErrorSeverity.error,
+        parser.errors.add(new JaelError(
             'Missing expression after operator "${token.span.text}", following expression ${left.span.text}.',
             token.span));
       }
@@ -111,8 +107,7 @@ class CallParselet implements InfixParselet {
     if (!parser.next(TokenType.rParen)) {
       var lastSpan = arguments.isEmpty ? null : arguments.last.span;
       lastSpan ??= token.span;
-      parser.errors.add(JaelError(JaelErrorSeverity.error,
-          'Missing ")" after argument list.', lastSpan));
+      parser.errors.add(new JaelError('Missing ")" after argument list.', lastSpan));
       return null;
     }
 
@@ -131,14 +126,12 @@ class IndexerParselet implements InfixParselet {
     var indexer = parser.parseExpression(0);
 
     if (indexer == null) {
-      parser.errors.add(JaelError(
-          JaelErrorSeverity.error, 'Missing expression after "[".', left.span));
+      parser.errors.add(new JaelError('Missing expression after "[".', left.span));
       return null;
     }
 
     if (!parser.next(TokenType.rBracket)) {
-      parser.errors.add(
-          JaelError(JaelErrorSeverity.error, 'Missing "]".', indexer.span));
+      parser.errors.add( new JaelError('Missing "]".', indexer.span));
       return null;
     }
 
@@ -157,8 +150,7 @@ class MemberParselet implements InfixParselet {
     var name = parser.parseIdentifier();
 
     if (name == null) {
-      parser.errors.add(JaelError(JaelErrorSeverity.error,
-          'Expected the name of a property following "."', token.span));
+      parser.errors.add(new JaelError('Expected the name of a property following "."', token.span));
       return null;
     }
 
