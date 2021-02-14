@@ -36,14 +36,15 @@ final Map<Pattern, TokenType> _expressionPatterns = {
   '!=': TokenType.nequ,
   _string1: TokenType.string,
   _string2: TokenType.string,
+
+  // Keywords
+  'new': TokenType.$new,
+
   _id: TokenType.id,
 //};
 
 //final Map<Pattern, TokenType> _expressionPatterns = {
   '}}': TokenType.rDoubleCurly,
-
-  // Keywords
-  'new': TokenType.$new,
 
   // Misc.
   '*': TokenType.asterisk,

@@ -311,6 +311,7 @@ class Parser {
     // Only consume a token if it could potentially be a prefix parselet
 
     for (var type in prefixParselets.keys) {
+
       if (next(type)) {
         var left = prefixParselets[type].parse(this, _current);
 
