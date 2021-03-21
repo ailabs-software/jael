@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
 import 'package:jael/src/member_resolver.dart';
 import 'caching_filespan.dart';
 import 'expression.dart';

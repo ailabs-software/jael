@@ -1,5 +1,5 @@
 import 'package:charcode/charcode.dart';
-import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
 import 'package:jael/src/member_resolver.dart';
 import 'caching_filespan.dart';
 import '../ast/ast.dart';

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart' show SymbolTable;
+import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
 import 'package:code_buffer/code_buffer.dart';
 import 'ast/ast.dart';
 import 'member_resolver.dart';
