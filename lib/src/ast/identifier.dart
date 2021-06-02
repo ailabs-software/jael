@@ -6,21 +6,21 @@ import 'token.dart';
 
 class Identifier extends Expression
 {
-  final Token id;
+  final Token? id;
 
   /** Extension to identifier name, used with : syntax in tag names, e.g. <h4:TextLabel></h4> */
-  final Token extension;
+  final Token? extension;
 
-  Identifier(Token this.id, [Token this.extension]);
+  Identifier(Token? this.id, [Token? this.extension]);
 
   @override
   CachingFileSpan get span
   {
-    return id.span;
+    return id!.span;
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
     switch (name)
     {
@@ -31,22 +31,22 @@ class Identifier extends Expression
       case 'false':
         return false;
       default:
-        var symbol = scope.resolve(name);
+        var symbol = scope!.resolve(name);
         if (symbol == null) {
           if (scope.resolve('!strict!')?.value == false) return null;
           throw ArgumentError('The name "$name" does not exist in this scope.');
         }
-        return scope.resolve(name).value;
+        return scope.resolve(name)!.value;
     }
   }
 
   String get name
   {
     StringBuffer sb = new StringBuffer();
-    sb.write(id.span.text);
+    sb.write(id!.span.text);
     if (extension != null) {
       sb.write(":");
-      sb.write(extension.span.text);
+      sb.write(extension!.span.text);
     }
     return sb.toString();
   }
@@ -63,13 +63,13 @@ class SyntheticIdentifier extends Identifier
   @override
   final String name;
 
-  SyntheticIdentifier(String this.name, [Token token]) : super(token);
+  SyntheticIdentifier(String this.name, [Token? token]) : super(token);
 
   @override
   CachingFileSpan get span
   {
     if (id != null) {
-      return id.span;
+      return id!.span;
     }
     throw new UnsupportedError('Cannot get the span of a SyntheticIdentifier.');
   }

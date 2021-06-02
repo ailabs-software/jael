@@ -6,7 +6,7 @@ import 'token.dart';
 
 class Array extends Expression
 {
-  final Token lBracket, rBracket;
+  final Token? lBracket, rBracket;
   final List<Expression> items;
 
   Array(this.lBracket, this.rBracket, this.items);
@@ -15,12 +15,12 @@ class Array extends Expression
   CachingFileSpan get span
   {
     return items
-        .fold<CachingFileSpan>(lBracket.span, (out, i) => out.expand(i.span))
-        .expand(rBracket.span);
+        .fold<CachingFileSpan>(lBracket!.span, (out, i) => out.expand(i.span))
+        .expand(rBracket!.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
     return items.map<dynamic>( (dynamic e) => e.compute(memberResolver, scope)).toList();
   }
@@ -37,33 +37,33 @@ class Array extends Expression
 
 class IndexerExpression extends Expression
 {
-  final Expression target;
+  final Expression? target;
   final Expression indexer;
-  final Token lBracket;
-  final Token rBracket;
+  final Token? lBracket;
+  final Token? rBracket;
 
   IndexerExpression(this.target, this.lBracket, this.indexer, this.rBracket);
 
   @override
   CachingFileSpan get span
   {
-    return target.span
-        .expand(lBracket.span)
+    return target!.span
+        .expand(lBracket!.span)
         .expand(indexer.span)
-        .expand(rBracket.span);
+        .expand(rBracket!.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    dynamic a = target.compute(memberResolver, scope), b = indexer.compute(memberResolver, scope);
+    dynamic a = target!.compute(memberResolver, scope), b = indexer.compute(memberResolver, scope);
     return a[b];
   }
 
   @override
   void assertIsValidDartExpression()
   {
-    target.assertIsValidDartExpression();
+    target!.assertIsValidDartExpression();
     indexer.assertIsValidDartExpression();
   }
 }

@@ -4,15 +4,17 @@ description:  A simple server-side HTML templating engine for Dart. Comparable t
 author: Tobe O <thosakwe@gmail.com>
 homepage: https://docs.angel-dart.dev/packages/front-end/jael
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 dependencies:
-  args: ^1.0.0
+  args: ^2.1.1
   charcode: ^1.0.0
-  code_buffer: ^1.0.0
+  code_buffer: 
+    path: /opt/deployment/dartpackages/code_buffer
   source_span: ^1.0.0
   string_scanner: ^1.0.0
   jclosure:
     path: /opt/deployment/dartpackages/jclosure
+  collection: ^1.15.0-nullsafety.4
 dev_dependencies:
   test: ^1.0.0
 executables:

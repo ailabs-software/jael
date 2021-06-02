@@ -17,12 +17,12 @@ class NotParselet implements PrefixParselet
   const NotParselet();
 
   @override
-  Expression parse(Parser parser, Token token)
+  Expression parse(Parser parser, Token? token)
   {
     var expression = parser.parseExpression(0);
 
     if (expression == null) {
-      parser.errors.add(new JaelError('Missing expression after "!" in negation expression.', token.span));
+      parser.errors.add(new JaelError('Missing expression after "!" in negation expression.', token!.span));
     }
 
     return new Negation(token, expression);
@@ -34,12 +34,12 @@ class NewParselet implements PrefixParselet
   const NewParselet();
 
   @override
-  Expression parse(Parser parser, Token token)
+  Expression? parse(Parser parser, Token? token)
   {
-    Expression call = parser.parseExpression(0);
+    Expression? call = parser.parseExpression(0);
 
     if (call == null) {
-      parser.errors.add(new JaelError('"new" must precede a call expression. Nothing was found.', token.span));
+      parser.errors.add(new JaelError('"new" must precede a call expression. Nothing was found.', token!.span));
       return null;
     }
     else if (call is Call) {
@@ -57,7 +57,7 @@ class NumberParselet implements PrefixParselet
   const NumberParselet();
 
   @override
-  Expression parse(Parser parser, Token token) => new NumberLiteral(token);
+  Expression parse(Parser parser, Token? token) => new NumberLiteral(token);
 }
 
 class HexParselet implements PrefixParselet
@@ -65,7 +65,7 @@ class HexParselet implements PrefixParselet
   const HexParselet();
 
   @override
-  Expression parse(Parser parser, Token token) => new HexLiteral(token);
+  Expression parse(Parser parser, Token? token) => new HexLiteral(token);
 }
 
 class StringParselet implements PrefixParselet
@@ -73,8 +73,8 @@ class StringParselet implements PrefixParselet
   const StringParselet();
 
   @override
-  Expression parse(Parser parser, Token token) =>
-      new StringLiteral(token, StringLiteral.parseValue(token));
+  Expression parse(Parser parser, Token? token) =>
+      new StringLiteral(token, StringLiteral.parseValue(token!));
 }
 
 class ArrayParselet implements PrefixParselet
@@ -82,10 +82,10 @@ class ArrayParselet implements PrefixParselet
   const ArrayParselet();
 
   @override
-  Expression parse(Parser parser, Token token)
+  Expression? parse(Parser parser, Token? token)
   {
     List<Expression> items = [];
-    Expression item = parser.parseExpression(0);
+    Expression? item = parser.parseExpression(0);
 
     while (item != null)
     {
@@ -97,7 +97,7 @@ class ArrayParselet implements PrefixParselet
 
     if (!parser.next(TokenType.rBracket)) {
       var lastSpan = items.isEmpty ? null : items.last.span;
-      lastSpan ??= token.span;
+      lastSpan ??= token!.span;
       parser.errors.add(new JaelError('Missing "]" to terminate array literal.', lastSpan));
       return null;
     }
@@ -111,10 +111,10 @@ class MapParselet implements PrefixParselet
   const MapParselet();
 
   @override
-  Expression parse(Parser parser, Token token)
+  Expression? parse(Parser parser, Token? token)
   {
     List<KeyValuePair> pairs = <KeyValuePair>[];
-    KeyValuePair pair = parser.parseKeyValuePair();
+    KeyValuePair? pair = parser.parseKeyValuePair();
 
     while (pair != null) {
       pairs.add(pair);
@@ -124,7 +124,7 @@ class MapParselet implements PrefixParselet
     }
 
     if (!parser.next(TokenType.rCurly)) {
-      var lastSpan = pairs.isEmpty ? token.span : pairs.last.span;
+      var lastSpan = pairs.isEmpty ? token!.span : pairs.last.span;
       parser.errors.add(new JaelError('Missing "}" in map literal.', lastSpan));
       return null;
     }
@@ -138,7 +138,7 @@ class IdentifierParselet implements PrefixParselet
   const IdentifierParselet();
 
   @override
-  Expression parse(Parser parser, Token token) => Identifier(token);
+  Expression parse(Parser parser, Token? token) => Identifier(token);
 }
 
 class ParenthesisParselet implements PrefixParselet
@@ -146,12 +146,12 @@ class ParenthesisParselet implements PrefixParselet
   const ParenthesisParselet();
 
   @override
-  Expression parse(Parser parser, Token token)
+  Expression? parse(Parser parser, Token? token)
   {
-    Expression expression = parser.parseExpression(0);
+    Expression? expression = parser.parseExpression(0);
 
     if (expression == null) {
-      parser.errors.add(new JaelError('Missing expression after "(".', token.span));
+      parser.errors.add(new JaelError('Missing expression after "(".', token!.span));
       return null;
     }
 

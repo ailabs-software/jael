@@ -11,14 +11,14 @@ final RegExp _matchUnescapedDollarSign = new RegExp(r"(?<!\\)\$");
 
 class StringLiteral extends Literal
 {
-  final Token string;
+  final Token? string;
   final String value;
 
-  StringLiteral(Token this.string, String this.value);
+  StringLiteral(Token? this.string, String this.value);
 
   static String parseValue(Token string)
   {
-    String text = string.span.text.substring(1, string.span.text.length - 1);
+    String text = string.span.text!.substring(1, string.span.text!.length - 1);
     List<int> codeUnits = text.codeUnits;
     StringBuffer buf = new StringBuffer();
 
@@ -76,11 +76,11 @@ class StringLiteral extends Literal
   @override
   CachingFileSpan get span
   {
-    return string.span;
+    return string!.span;
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
     return value;
   }
@@ -93,12 +93,12 @@ class StringLiteral extends Literal
     // A string containing an unescaped $ cannot be trivially verified to be syntactically valid Dart code,
     // so for the sake of simplicity, we will force all strings to have dollar sign escaped when transpiling to Dart.
     // Note: We remove double-slashes before checking, otherwise regexp won't see "\\$" as unescaped.
-    if ( _matchUnescapedDollarSign.hasMatch( string.span.text.replaceAll(r"\\", "") ) ) {
+    if ( _matchUnescapedDollarSign.hasMatch( string!.span.text!.replaceAll(r"\\", "") ) ) {
       throw new JaelError("To ensure your string literal is valid Dart, dollar sign (\$) must be escaped with a preceding back slash.", span);
     }
 
     // Check for non-escaped newline characters in input, which are not supported as Dart expressions (currently).
-    if ( string.span.text.contains("\n") ) {
+    if ( string!.span.text!.contains("\n") ) {
       throw new JaelError(r"To ensure your string literal is valid Dart, it cannot be multiline (you can use \n to insert a new line character).", span);
     }
   }

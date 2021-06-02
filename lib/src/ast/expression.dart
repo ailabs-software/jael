@@ -6,11 +6,11 @@ import 'token.dart';
 
 abstract class Expression extends AstNode
 {
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope);
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope);
 
-  String computeAsStringLiteral()
+  String? computeAsStringLiteral()
   {
-    return compute(null, null) as String;
+    return compute(null, null) as String?;
   }
 
   void assertIsValidDartExpression();
@@ -23,32 +23,32 @@ abstract class Literal extends Expression
 
 class Negation extends Expression
 {
-  final Token exclamation;
-  final Expression expression;
+  final Token? exclamation;
+  final Expression? expression;
 
   Negation(this.exclamation, this.expression);
 
   @override
   CachingFileSpan get span
   {
-    return exclamation.span.expand(expression.span);
+    return exclamation!.span.expand(expression!.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    var v = expression.compute(memberResolver, scope) as bool;
+    var v = expression!.compute(memberResolver, scope) as bool?;
 
-    if (scope.resolve('!strict!')?.value == false) {
+    if (scope!.resolve('!strict!')?.value == false) {
       v = v == true;
     }
 
-    return !v;
+    return !v!;
   }
 
   @override
   void assertIsValidDartExpression()
   {
-    expression.assertIsValidDartExpression();
+    expression!.assertIsValidDartExpression();
   }
 }

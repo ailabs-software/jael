@@ -6,22 +6,22 @@ import 'token.dart';
 
 class BinaryExpression extends Expression
 {
-  final Expression left;
+  final Expression? left;
   final Expression right;
-  final Token operator;
+  final Token? operator;
 
   BinaryExpression(this.left, this.operator, this.right);
 
   @override
   CachingFileSpan get span
   {
-    return left.span.expand(operator.span).expand(right.span);
+    return left!.span.expand(operator!.span).expand(right.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    dynamic l = left.compute(memberResolver, scope);
+    dynamic l = left!.compute(memberResolver, scope);
     dynamic r = right.compute(memberResolver, scope);
 
     switch (operator?.type)
@@ -57,7 +57,7 @@ class BinaryExpression extends Expression
   @override
   void assertIsValidDartExpression()
   {
-    left.assertIsValidDartExpression();
+    left!.assertIsValidDartExpression();
     right.assertIsValidDartExpression();
   }
 }

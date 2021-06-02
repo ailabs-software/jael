@@ -6,7 +6,7 @@ import 'expression.dart';
 import 'token.dart';
 
 class NewExpression extends Expression {
-  final Token $new;
+  final Token? $new;
   final Call call;
 
   NewExpression(this.$new, this.call);
@@ -14,11 +14,11 @@ class NewExpression extends Expression {
   @override
   CachingFileSpan get span
   {
-    return $new.span.expand(call.span);
+    return $new!.span.expand(call.span);
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
     return new UnsupportedError('NewExpression is unsupported.');
   }

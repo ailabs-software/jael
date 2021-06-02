@@ -3,7 +3,7 @@ import 'text/parser.dart';
 import 'text/scanner.dart';
 
 /// Parses a Jael document.
-Document parseDocument(String text, {String sourceUrl, bool asDSX = false, void onError(JaelError error)})
+Document? parseDocument(String text, {String? sourceUrl, bool asDSX = false, void onError(JaelError error)?})
 {
   var scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
 

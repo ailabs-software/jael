@@ -7,15 +7,15 @@ import 'token.dart';
 
 class NumberLiteral extends Literal
 {
-  final Token number;
-  num _value;
+  final Token? number;
+  num? _value;
 
   NumberLiteral(this.number);
 
   @override
   CachingFileSpan get span
   {
-    return number.span;
+    return number!.span;
   }
 
   static num parse(String value)
@@ -31,9 +31,9 @@ class NumberLiteral extends Literal
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    return _value ??= parse(number.span.text);
+    return _value ??= parse(number!.span.text!);
   }
 
   @override
@@ -45,15 +45,15 @@ class NumberLiteral extends Literal
 
 class HexLiteral extends Literal
 {
-  final Token hex;
-  num _value;
+  final Token? hex;
+  num? _value;
 
   HexLiteral(this.hex);
 
   @override
   CachingFileSpan get span
   {
-    return hex.span;
+    return hex!.span;
   }
 
   static num parse(String value)
@@ -62,9 +62,9 @@ class HexLiteral extends Literal
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    return _value ??= parse(hex.span.text);
+    return _value ??= parse(hex!.span.text!);
   }
 
   @override

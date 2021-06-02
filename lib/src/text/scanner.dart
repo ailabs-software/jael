@@ -11,7 +11,7 @@ final RegExp _string2 = new RegExp(r'"((\\(["\\/bfnrt\$]|(u[0-9a-fA-F][0-9a-fA-F
 // Thanks to: https://github.com/stevemao/html-comment-regex/blob/master/index.js
 final RegExp _htmlComment = new RegExp(r'<!--([\s\S]*?)-->');
 
-Scanner scan(String text, {String sourceUrl, bool asDSX = false}) =>
+Scanner scan(String text, {String? sourceUrl, bool asDSX = false}) =>
     _Scanner(text, sourceUrl)..scan(asDSX: asDSX);
 
 abstract class Scanner {
@@ -87,44 +87,44 @@ class _Scanner implements Scanner {
   final List<Token> tokens = [];
 
   _ScannerState state = _ScannerState.html;
-  final Queue<String> openTags = Queue();
+  final Queue<String?> openTags = Queue();
 
-  SpanScanner _scanner;
+  SpanScanner? _scanner;
 
-  _Scanner(String text, String sourceUrl) {
+  _Scanner(String text, String? sourceUrl) {
     _scanner = SpanScanner(text, sourceUrl: sourceUrl);
   }
 
   void scan({bool asDSX = false}) {
-    while (!_scanner.isDone) {
+    while (!_scanner!.isDone) {
       if (state == _ScannerState.html) {
         scanHtml(asDSX);
       } else if (state == _ScannerState.freeText) {
         // Just keep parsing until we hit "</"
-        var start = _scanner.state, end = start;
+        var start = _scanner!.state, end = start;
 
-        while (!_scanner.isDone) {
+        while (!_scanner!.isDone) {
           // Skip through comments
-          if (_scanner.scan(_htmlComment)) continue;
+          if (_scanner!.scan(_htmlComment)) continue;
 
           // Break on {{ or {
-          if (_scanner.matches(asDSX ? '{' : '{{')) {
+          if (_scanner!.matches(asDSX ? '{' : '{{')) {
             state = _ScannerState.html;
             //_scanner.position--;
             break;
           }
 
-          var ch = _scanner.readChar();
+          var ch = _scanner!.readChar();
 
           if (ch == $lt) {
             // && !_scanner.isDone) {
-            if (_scanner.matches('/')) {
+            if (_scanner!.matches('/')) {
               // If we reached "</", backtrack and break into HTML
               openTags.removeFirst();
-              _scanner.position--;
+              _scanner!.position--;
               state = _ScannerState.html;
               break;
-            } else if (_scanner.matches(_id)) {
+            } else if (_scanner!.matches(_id)) {
               // Also break when we reach <foo.
               //
               // HOWEVER, that is also JavaScript. So we must
@@ -134,26 +134,26 @@ class _Scanner implements Scanner {
 
               if (!shouldBreak) {
                 // Try to see if we are closing a script tag
-                var replay = _scanner.state;
+                var replay = _scanner!.state;
                 _scanner
                   ..readChar()
                   ..scan(_whitespace);
                 //print(_scanner.emptySpan.highlight());
 
-                if (_scanner.matches(_id)) {
+                if (_scanner!.matches(_id)) {
                   //print(_scanner.lastMatch[0]);
-                  shouldBreak = _scanner.lastMatch[0] == 'script';
-                  _scanner.position--;
+                  shouldBreak = _scanner!.lastMatch![0] == 'script';
+                  _scanner!.position--;
                 }
 
                 if (!shouldBreak) {
-                  _scanner.state = replay;
+                  _scanner!.state = replay;
                 }
               }
 
               if (shouldBreak) {
                 openTags.removeFirst();
-                _scanner.position--;
+                _scanner!.position--;
                 state = _ScannerState.html;
                 break;
               }
@@ -161,12 +161,12 @@ class _Scanner implements Scanner {
           }
 
           // Otherwise, just add to the "buffer"
-          end = _scanner.state;
+          end = _scanner!.state;
         }
 
-        CachingFileSpan span = new CachingFileSpan( _scanner.spanFrom(start, end) );
+        CachingFileSpan span = new CachingFileSpan( _scanner!.spanFrom(start, end) );
 
-        if (span.text.isNotEmpty) {
+        if (span.text!.isNotEmpty) {
           tokens.add(Token(TokenType.text, span, null));
         }
       }
@@ -184,11 +184,11 @@ class _Scanner implements Scanner {
 
         while (true) {
           // Scan whitespace
-          _scanner.scan(_whitespace);
+          _scanner!.scan(_whitespace);
 
           _expressionPatterns.forEach((pattern, type) {
-            if (_scanner.matches(pattern)) {
-              potential.add(Token(type, new CachingFileSpan(_scanner.lastSpan), _scanner.lastMatch));
+            if (_scanner!.matches(pattern)) {
+              potential.add(Token(type, new CachingFileSpan(_scanner!.lastSpan), _scanner!.lastMatch));
             }
           });
 
@@ -199,19 +199,19 @@ class _Scanner implements Scanner {
           var token = potential.first;
           tokens.add(token);
 
-          _scanner.scan(token.span.text);
+          _scanner!.scan(token.span.text!);
 
           if (token.type == TokenType.lt) {
             brackets.addFirst(token);
 
             // Try to see if we are at a tag.
-            var replay = _scanner.state;
-            _scanner.scan(_whitespace);
+            var replay = _scanner!.state;
+            _scanner!.scan(_whitespace);
 
-            if (_scanner.matches(_id)) {
-              openTags.addFirst(_scanner.lastMatch[0]);
+            if (_scanner!.matches(_id)) {
+              openTags.addFirst(_scanner!.lastMatch![0]);
             } else {
-              _scanner.state = replay;
+              _scanner!.state = replay;
             }
           } else if (token.type == TokenType.slash) {
             // Only push if we're at </foo
@@ -227,11 +227,11 @@ class _Scanner implements Scanner {
               brackets.removeFirst();
 
               // Now, ONLY continue parsing HTML if the next character is '<'.
-              var replay = _scanner.state;
-              _scanner.scan(_whitespace);
+              var replay = _scanner!.state;
+              _scanner!.scan(_whitespace);
 
-              if (!_scanner.matches('<')) {
-                _scanner.state = replay;
+              if (!_scanner!.matches('<')) {
+                _scanner!.state = replay;
                 state = _ScannerState.freeText;
                 break;
               }
@@ -242,11 +242,11 @@ class _Scanner implements Scanner {
               // We're at foo>, try to parse text?
               brackets.removeFirst();
 
-              var replay = _scanner.state;
-              _scanner.scan(_whitespace);
+              var replay = _scanner!.state;
+              _scanner!.scan(_whitespace);
 
-              if (!_scanner.matches('<')) {
-                _scanner.state = replay;
+              if (!_scanner!.matches('<')) {
+                _scanner!.state = replay;
                 state = _ScannerState.freeText;
                 break;
               }
@@ -260,7 +260,7 @@ class _Scanner implements Scanner {
           potential.clear();
         }
       }
-    } while (brackets.isNotEmpty && !_scanner.isDone);
+    } while (brackets.isNotEmpty && !_scanner!.isDone);
 
     state = _ScannerState.freeText;
   }

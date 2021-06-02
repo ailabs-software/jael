@@ -41,7 +41,7 @@ void main(List<String> args) async {
     if (argResults.rest.isEmpty) {
       var text = await stdin.transform(utf8.decoder).join();
       var result =
-          await format(argResults['stdin-name'] as String, text, argResults);
+          await format(argResults['stdin-name'] as String?, text, argResults);
       if (result != null) print(result);
     } else {
       for (var arg in argResults.rest) {
@@ -109,7 +109,7 @@ Future<void> formatFile(File file, ArgResults argResults) async {
   }
 }
 
-String format(String filename, String content, ArgResults argResults) {
+String? format(String? filename, String content, ArgResults argResults) {
   var errored = false;
   var doc = parseDocument(content, sourceUrl: filename, onError: (e) {
     stderr.writeln(e);
@@ -118,7 +118,7 @@ String format(String filename, String content, ArgResults argResults) {
   if (errored) return null;
   var fmt = JaelFormatter(
       int.parse(argResults['tab-size'] as String),
-      argResults['insert-spaces'] as bool,
+      argResults['insert-spaces'] as bool?,
       int.parse(argResults['line-length'] as String));
   return fmt.apply(doc);
 }

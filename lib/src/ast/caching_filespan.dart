@@ -12,42 +12,42 @@ import 'package:source_span/source_span.dart';
 
 class CachingFileSpan
 {
-  final FileSpan _fileSpan;
+  final FileSpan? _fileSpan;
 
-  String _textCache;
+  String? _textCache;
 
-  CachingFileSpan(FileSpan this._fileSpan);
+  CachingFileSpan(FileSpan? this._fileSpan);
 
-  String get text
+  String? get text
   {
     if (_textCache == null) {
-      _textCache = _fileSpan.text;
+      _textCache = _fileSpan!.text;
     }
     return _textCache;
   }
 
   FileLocation get start
   {
-    return _fileSpan.start;
+    return _fileSpan!.start;
   }
 
   FileLocation get end
   {
-    return _fileSpan.end;
+    return _fileSpan!.end;
   }
 
   int get length
   {
-    return _fileSpan.length;
+    return _fileSpan!.length;
   }
 
   CachingFileSpan expand(CachingFileSpan other)
   {
-    return new CachingFileSpan( _fileSpan.expand(other._fileSpan) );
+    return new CachingFileSpan( _fileSpan!.expand(other._fileSpan!) );
   }
 
   String highlight({dynamic color})
   {
-    return _fileSpan.highlight(color: color);
+    return _fileSpan!.highlight(color: color);
   }
 }

@@ -10,10 +10,10 @@ class RendererManager<T extends StringSink> {
   // Renderer
   final Renderer<T> _renderer;
 
-  IMemberResolver _memberResolver;
+  IMemberResolver? _memberResolver;
 
   // Cache
-  Map<String, Document> _documentCache = <String, Document>{};
+  Map<String, Document?> _documentCache = <String, Document?>{};
 
   RendererManager(Renderer<T> this._renderer);
 
@@ -32,7 +32,7 @@ class RendererManager<T extends StringSink> {
   /** Renders template */
   void render(T output, String templateText, SymbolTable<dynamic> symbolTable)
   {
-    Document document = _getDocumentCached(templateText);
+    Document document = _getDocumentCached(templateText)!;
 
     _renderer.render(
       document,
@@ -43,7 +43,7 @@ class RendererManager<T extends StringSink> {
 
   /** First tries to obtain document from cache, then parses and caches if not.
    *  CAUTION: This can cause a memory leak if the template text changes dynamically. */
-  Document _getDocumentCached(String templateText)
+  Document? _getDocumentCached(String templateText)
   {
     if ( !_documentCache.containsKey(templateText) ) {
       print("Jael renderer manager: adding template to cache.");

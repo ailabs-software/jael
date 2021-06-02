@@ -6,7 +6,7 @@ import 'string.dart';
 import 'token.dart';
 
 class Document extends AstNode {
-  final Doctype doctype;
+  final Doctype? doctype;
   final Element root;
 
   Document(this.doctype, this.root);
@@ -14,32 +14,32 @@ class Document extends AstNode {
   @override
   CachingFileSpan get span {
     if (doctype == null) return root.span;
-    return doctype.span.expand(root.span);
+    return doctype!.span.expand(root.span);
   }
 }
 
 class HtmlComment extends ElementChild {
-  final Token htmlComment;
+  final Token? htmlComment;
 
   HtmlComment(this.htmlComment);
 
   @override
-  CachingFileSpan get span => htmlComment.span;
+  CachingFileSpan get span => htmlComment!.span;
 }
 
 class Text extends ElementChild {
-  final Token text;
+  final Token? text;
 
   Text(this.text);
 
   @override
-  CachingFileSpan get span => text.span;
+  CachingFileSpan get span => text!.span;
 }
 
 class Doctype extends AstNode {
-  final Token lt, doctype, gt;
-  final Identifier html, public;
-  final StringLiteral name, url;
+  final Token? lt, doctype, gt;
+  final Identifier? html, public;
+  final StringLiteral? name, url;
 
   Doctype(this.lt, this.doctype, this.html, this.public, this.name, this.url,
       this.gt);
@@ -47,14 +47,14 @@ class Doctype extends AstNode {
   @override
   CachingFileSpan get span {
     if (public == null) {
-      return lt.span.expand(doctype.span).expand(html.span).expand(gt.span);
+      return lt!.span.expand(doctype!.span).expand(html!.span).expand(gt!.span);
     }
-    return lt.span
-        .expand(doctype.span)
-        .expand(html.span)
-        .expand(public.span)
-        .expand(name.span)
-        .expand(url.span)
-        .expand(gt.span);
+    return lt!.span
+        .expand(doctype!.span)
+        .expand(html!.span)
+        .expand(public!.span)
+        .expand(name!.span)
+        .expand(url!.span)
+        .expand(gt!.span);
   }
 }

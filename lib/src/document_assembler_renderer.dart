@@ -21,7 +21,7 @@ class DocumentAssemblerRenderer<T extends IDocumentAssembler> extends Renderer<T
     // Render attributes.
     for (Attribute attribute in element.attributes)
     {
-      String attributeValue = attribute.value.compute(memberResolver, scope).toString();
+      String attributeValue = attribute.value!.compute(memberResolver, scope).toString();
 
       if (attribute.name == "class") {
         // If is class, needs to go through classList so inliner will be applied.
@@ -39,9 +39,9 @@ class DocumentAssemblerRenderer<T extends IDocumentAssembler> extends Renderer<T
 
   /** Abstract method. Write a text literal from the template source */
   @override
-  void writeTextLiteral(T output, String text)
+  void writeTextLiteral(T output, String? text)
   {
-    output.writeTextRawUnsafe(text);
+    output.writeTextRawUnsafe(text!);
   }
 
   /** Abstract method. Write an interpolated value, properly escaping */

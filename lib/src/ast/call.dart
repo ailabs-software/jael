@@ -8,8 +8,8 @@ import 'token.dart';
 
 class Call extends Expression
 {
-  final Expression target;
-  final Token lParen, rParen;
+  final Expression? target;
+  final Token? lParen, rParen;
   final List<Expression> arguments;
   final List<NamedArgument> namedArguments;
 
@@ -19,25 +19,25 @@ class Call extends Expression
   CachingFileSpan get span
   {
     return arguments
-        .fold<CachingFileSpan>(target.span, (out, a) => out.expand(a.span))
+        .fold<CachingFileSpan>(target!.span, (out, a) => out.expand(a.span))
         .expand(namedArguments.fold<CachingFileSpan>(
-            lParen.span, (out, a) => out.expand(a.span)))
-        .expand(rParen.span);
+            lParen!.span, (out, a) => out.expand(a.span)))
+        .expand(rParen!.span);
   }
 
-  List computePositional(IMemberResolver memberResolver, SymbolTable scope) =>
+  List computePositional(IMemberResolver? memberResolver, SymbolTable? scope) =>
       arguments.map<dynamic>((dynamic e) => e.compute(memberResolver, scope)).toList();
 
-  Map<Symbol, dynamic> computeNamed(IMemberResolver memberResolver, SymbolTable scope) {
+  Map<Symbol, dynamic> computeNamed(IMemberResolver? memberResolver, SymbolTable? scope) {
     return namedArguments.fold<Map<Symbol, dynamic> >(<Symbol, dynamic>{}, (out, a) {
       return out..[Symbol(a.name.name)] = a.value.compute(memberResolver, scope);
     });
   }
 
   @override
-  dynamic compute(IMemberResolver memberResolver, SymbolTable scope)
+  dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    dynamic callee = target.compute(memberResolver, scope);
+    dynamic callee = target!.compute(memberResolver, scope);
     List<dynamic> args = computePositional(memberResolver, scope);
     var named = computeNamed(memberResolver, scope);
 
@@ -47,7 +47,7 @@ class Call extends Expression
   @override
   void assertIsValidDartExpression()
   {
-    target.assertIsValidDartExpression();
+    target!.assertIsValidDartExpression();
 
     for (Expression argument in arguments)
     {
@@ -65,7 +65,7 @@ class Call extends Expression
 class NamedArgument extends AstNode
 {
   final Identifier name;
-  final Token colon;
+  final Token? colon;
   final Expression value;
 
   NamedArgument(this.name, this.colon, this.value);
@@ -73,6 +73,6 @@ class NamedArgument extends AstNode
   @override
   CachingFileSpan get span
   {
-    return name.span.expand(colon.span).expand(value.span);
+    return name.span.expand(colon!.span).expand(value.span);
   }
 }

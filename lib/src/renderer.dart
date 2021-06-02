@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
 import 'member_resolver.dart';
 import 'ast/ast.dart';
@@ -14,7 +15,7 @@ abstract class Renderer<T extends StringSink>
   void renderPrimaryElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, SymbolTable childScope, bool html5);
 
   /** Abstract method. Write a text literal from the template source */
-  void writeTextLiteral(T output, String text);
+  void writeTextLiteral(T output, String? text);
 
   /** Abstract method. Write an interpolated value, properly escaping */
   void writeInterpolatedValue(T output, Interpolation interpolation, dynamic value);
@@ -29,7 +30,7 @@ abstract class Renderer<T extends StringSink>
   ///
   /// If [strictResolution] is `false` (default: `true`), then undefined identifiers will return `null`
   /// instead of throwing.
-  void render(Document document, T output, SymbolTable scope, {bool strictResolution = true, IMemberResolver memberResolver})
+  void render(Document document, T output, SymbolTable scope, {bool strictResolution = true, IMemberResolver? memberResolver})
   {
     scope.create('!strict!', value: strictResolution != false);
 
@@ -38,7 +39,7 @@ abstract class Renderer<T extends StringSink>
     }
 
     if (document.doctype != null) {
-      output.writeln(document.doctype.span.text);
+      output.writeln(document.doctype!.span.text);
     }
 
     renderElement(document.root, output, memberResolver, scope, document.doctype?.public == null);
@@ -101,14 +102,14 @@ abstract class Renderer<T extends StringSink>
     if (attribute.value == null) return;
 
     var asAttribute = element.attributes
-        .firstWhere((a) => a.name == 'as', orElse: () => null);
+        .firstWhereOrNull((a) => a.name == 'as');
     var indexAsAttribute = element.attributes
-        .firstWhere((a) => a.name == 'index-as', orElse: () => null);
+        .firstWhereOrNull((a) => a.name == 'index-as');
     var alias = asAttribute?.value?.compute(memberResolver, scope)?.toString() ?? 'item';
     var indexAs = indexAsAttribute?.value?.compute(memberResolver, scope)?.toString() ?? 'i';
     var otherAttributes = element.attributes.where(
         (a) => a.name != 'for-each' && a.name != 'as' && a.name != 'index-as');
-    Element strippedElement;
+    late Element strippedElement;
 
     if (element is SelfClosingElement) {
       strippedElement = SelfClosingElement(element.lt, element.tagName,
@@ -127,7 +128,7 @@ abstract class Renderer<T extends StringSink>
     }
 
     int i = 0;
-    for (dynamic item in attribute.value.compute(memberResolver, scope)) {
+    for (dynamic item in attribute.value!.compute(memberResolver, scope)) {
       SymbolTable<dynamic> childScope = scope.createChild(values: <String, dynamic>{alias: item, indexAs: i++});
       renderElement(strippedElement, output, memberResolver, childScope, html5);
     }
@@ -135,9 +136,9 @@ abstract class Renderer<T extends StringSink>
 
   void renderIf(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
-    Attribute attribute = element.getAttribute("if");
+    Attribute attribute = element.getAttribute("if")!;
 
-    dynamic vv = attribute.value.compute(memberResolver, scope);
+    dynamic vv = attribute.value!.compute(memberResolver, scope);
 
     if (scope.resolve('!strict!')?.value == false) {
       vv = vv == true;
@@ -148,7 +149,7 @@ abstract class Renderer<T extends StringSink>
     if (!v) return;
 
     Iterable<Attribute> otherAttributes = element.attributes.where((a) => a.name != "if");
-    Element strippedElement;
+    late Element strippedElement;
 
     if (element is SelfClosingElement) {
       strippedElement = SelfClosingElement(element.lt, element.tagName,
@@ -185,7 +186,7 @@ abstract class Renderer<T extends StringSink>
   void renderSwitch(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
     dynamic value = element.attributes
-        .firstWhere((a) => a.name == 'value', orElse: () => null)
+        .firstWhereOrNull((a) => a.name == 'value')
         ?.value
         ?.compute(memberResolver, scope);
 
@@ -195,7 +196,7 @@ abstract class Renderer<T extends StringSink>
 
     for (Element child in cases) {
       dynamic comparison = child.attributes
-              .firstWhere((a) => a.name == 'value', orElse: () => null)
+              .firstWhereOrNull((a) => a.name == 'value')
               ?.value
               ?.compute(memberResolver, scope);
 
@@ -209,9 +210,8 @@ abstract class Renderer<T extends StringSink>
       }
     }
 
-    var defaultCase = element.children.firstWhere(
-        (c) => c is Element && c.tagName.name == 'default',
-        orElse: () => null) as Element;
+    var defaultCase = element.children.firstWhereOrNull(
+        (c) => c is Element && c.tagName.name == 'default') as Element?;
     if (defaultCase != null) {
       for (int i = 0; i < defaultCase.children.length; i++) {
         var child = defaultCase.children.elementAt(i);
@@ -224,10 +224,10 @@ abstract class Renderer<T extends StringSink>
   {
     if (child is Text && parent?.tagName?.name != 'textarea') {
       if (index == 0) {
-        writeTextLiteral(output, child.span.text.trimLeft());
+        writeTextLiteral(output, child.span.text!.trimLeft());
       }
       else if (index == total - 1) {
-        writeTextLiteral(output, child.span.text.trimRight());
+        writeTextLiteral(output, child.span.text!.trimRight());
       }
       else {
         writeTextLiteral(output, child.span.text);
@@ -267,13 +267,13 @@ abstract class Renderer<T extends StringSink>
 
 
     // AI LABS: Modified to allow overriding of custom eleents.
-    var p = scope.isRoot ? scope : scope.parent;
+    var p = scope.isRoot ? scope : scope.parent!;
     p.assign(customElementName(memberResolver, name), element);
   }
 
   void renderCustomElement(Element element, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5)
   {
-    RegularElement template = scope.resolve(customElementName(memberResolver, element.tagName.name)).value as RegularElement;
+    RegularElement? template = scope.resolve(customElementName(memberResolver, element.tagName.name))!.value as RegularElement?;
     dynamic renderAs = element.getAttribute('as')?.value?.compute(memberResolver, scope);
     Iterable<Attribute> attrs = element.attributes.where((a) => a.name != 'as');
 
@@ -285,7 +285,7 @@ abstract class Renderer<T extends StringSink>
     }
 
     if (renderAs == false) {
-      for (int i = 0; i < template.children.length; i++) {
+      for (int i = 0; i < template!.children.length; i++) {
         var child = template.children.elementAt(i);
         renderElementChild(element, child, output, memberResolver, scope, html5, i, element.children.length);
       }
@@ -293,7 +293,7 @@ abstract class Renderer<T extends StringSink>
       var tagName = renderAs?.toString() ?? 'div';
 
       var syntheticElement = RegularElement(
-          template.lt,
+          template!.lt,
           SyntheticIdentifier(tagName),
           element.attributes
               .where((a) => a.name != 'as' && !a.name.startsWith('@')),

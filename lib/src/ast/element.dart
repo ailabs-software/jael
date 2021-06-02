@@ -54,7 +54,7 @@ abstract class Element extends ElementChild
     return attributes.map( (Attribute attribute) => attribute.name );
   }
 
-  Attribute getAttribute(String name)
+  Attribute? getAttribute(String name)
   {
     for (Attribute attribute in attributes)
     {
@@ -68,7 +68,7 @@ abstract class Element extends ElementChild
 
   Attribute getRequiredAttribute(String name)
   {
-    Attribute attribute = getAttribute(name);
+    Attribute? attribute = getAttribute(name);
     if (attribute == null) {
       throw new JaelError("The attribute \"${name}\" of <${tagName.name}> is required, but is missing.", span);
     }
@@ -107,11 +107,11 @@ abstract class Element extends ElementChild
 
 class SelfClosingElement extends Element
 {
-  final Token lt;
+  final Token? lt;
 
-  final Token slash;
+  final Token? slash;
 
-  final Token gt;
+  final Token? gt;
 
   @override
   final Identifier tagName;
@@ -129,24 +129,24 @@ class SelfClosingElement extends Element
   CachingFileSpan get span
   {
     CachingFileSpan start = attributes.fold<CachingFileSpan>(
-        lt.span.expand(tagName.span), (out, a) => out.expand(a.span));
+        lt!.span.expand(tagName.span), (out, a) => out.expand(a.span));
     return slash != null
-        ? start.expand(slash.span).expand(gt.span)
-        : start.expand(gt.span);
+        ? start.expand(slash!.span).expand(gt!.span)
+        : start.expand(gt!.span);
   }
 }
 
 class RegularElement extends Element
 {
-  final Token lt;
+  final Token? lt;
 
-  final Token gt;
+  final Token? gt;
 
-  final Token lt2;
+  final Token? lt2;
 
-  final Token slash;
+  final Token? slash;
 
-  final Token gt2;
+  final Token? gt2;
 
   @override
   final Identifier tagName;
@@ -167,16 +167,16 @@ class RegularElement extends Element
   {
     CachingFileSpan openingTag = attributes
         .fold<CachingFileSpan>(
-            lt.span.expand(tagName.span), (out, a) => out.expand(a.span))
-        .expand(gt.span);
+            lt!.span.expand(tagName.span), (out, a) => out.expand(a.span))
+        .expand(gt!.span);
 
     if (gt2 == null) return openingTag;
 
     return children
         .fold<CachingFileSpan>(openingTag, (out, c) => out.expand(c.span))
-        .expand(lt2.span)
-        .expand(slash.span)
+        .expand(lt2!.span)
+        .expand(slash!.span)
         .expand(tagName2.span)
-        .expand(gt2.span);
+        .expand(gt2!.span);
   }
 }

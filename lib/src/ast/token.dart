@@ -3,9 +3,9 @@ import 'caching_filespan.dart';
 class Token {
   final TokenType type;
   final CachingFileSpan span;
-  final Match match;
+  final Match? match;
 
-  Token(TokenType this.type, CachingFileSpan this.span, Match this.match);
+  Token(TokenType this.type, CachingFileSpan this.span, Match? this.match);
 
   @override
   String toString()
