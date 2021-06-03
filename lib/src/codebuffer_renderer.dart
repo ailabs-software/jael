@@ -101,7 +101,7 @@ class CodeBufferRenderer extends Renderer<CodeBuffer>
   @override
   void beforeRenderChildElement(CodeBuffer output)
   {
-    if (output?.lastLine?.text?.isNotEmpty == true) {
+    if (output.lastLine?.text.isNotEmpty == true) {
       output.writeln();
     }
   }

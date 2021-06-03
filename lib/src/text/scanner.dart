@@ -135,7 +135,7 @@ class _Scanner implements Scanner {
               if (!shouldBreak) {
                 // Try to see if we are closing a script tag
                 var replay = _scanner!.state;
-                _scanner
+                _scanner!
                   ..readChar()
                   ..scan(_whitespace);
                 //print(_scanner.emptySpan.highlight());

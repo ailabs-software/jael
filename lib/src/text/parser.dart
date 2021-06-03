@@ -87,7 +87,7 @@ class Parser {
       return null;
     }
     var doctype = _current, html = parseIdentifier() as Token?;
-    if (html?.span?.text?.toLowerCase() != 'html') {
+    if (html?.span.text?.toLowerCase() != 'html') {
       errors.add(new JaelError('Expected "html" in doctype declaration.', html?.span ?? doctype!.span));
       return null;
     }
@@ -102,8 +102,8 @@ class Parser {
       return Doctype(lt, doctype, html as Identifier?, null, null, null, _current);
     }
 
-    if (public?.span?.text?.toLowerCase() != 'public') {
-      errors.add(new JaelError('Expected "public" in doctype declaration.', public?.span ?? html!.span));
+    if (public.span.text?.toLowerCase() != 'public') {
+      errors.add(new JaelError('Expected "public" in doctype declaration.', public.span));
       return null;
     }
 

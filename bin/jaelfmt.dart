@@ -98,7 +98,7 @@ Future<void> formatFile(File file, ArgResults argResults) async {
       if (argResults['dry-run'] as bool) {
         print('Would have formatted ${file.path}');
       } else {
-        await file.writeAsStringSync(formatted);
+        file.writeAsStringSync(formatted);
         print('Formatted ${file.path}');
       }
     } else {

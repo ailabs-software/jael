@@ -222,7 +222,7 @@ abstract class Renderer<T extends StringSink>
 
   void renderElementChild(Element parent, ElementChild child, T output, IMemberResolver memberResolver, SymbolTable scope, bool html5, int index, int total)
   {
-    if (child is Text && parent?.tagName?.name != 'textarea') {
+    if (child is Text && parent.tagName.name != 'textarea') {
       if (index == 0) {
         writeTextLiteral(output, child.span.text!.trimLeft());
       }

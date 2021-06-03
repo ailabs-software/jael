@@ -50,7 +50,7 @@ class BinaryExpression extends Expression
       case TokenType.elvis:
         return l ?? r;
       default:
-        throw UnsupportedError('Unsupported binary operator: "${operator?.span?.text ?? "<null>"}".');
+        throw UnsupportedError('Unsupported binary operator: "${operator?.span.text ?? "<null>"}".');
     }
   }
 

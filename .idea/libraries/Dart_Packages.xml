@@ -54,7 +54,7 @@
         <entry key="code_buffer">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../code_buffer/lib" />
+              <option value="$PROJECT_DIR$/../../code_buffer/lib" />
             </list>
           </value>
         </entry>
@@ -348,7 +348,7 @@
       </option>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../code_buffer/lib" />
+      <root url="file://$PROJECT_DIR$/../../code_buffer/lib" />
       <root url="file://$PROJECT_DIR$/../../jclosure/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-22.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-1.7.0/lib" />
