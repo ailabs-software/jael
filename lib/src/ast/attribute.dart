@@ -40,11 +40,12 @@ class Attribute extends AstNode
     return nameNode!.span.expand(equals?.span ?? nequ!.span).expand(value!.span);
   }
 
-  Expression? getRequiredValue()
+  Expression getRequiredValue()
   {
-    if (value == null) {
+    Expression? valueAlias = value;
+    if (valueAlias == null) {
       throw new JaelError("The attribute \"${name}\" does not have a value, but a value is required.", span);
     }
-    return value;
+    return valueAlias;
   }
 }
