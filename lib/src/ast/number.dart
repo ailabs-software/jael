@@ -20,13 +20,13 @@ class NumberLiteral extends Literal
 
   static num parse(String value)
   {
-    var e = value.indexOf('E');
+    int e = value.indexOf('E');
     e != -1 ? e : e = value.indexOf('e');
 
     if (e == -1) return num.parse(value);
 
-    var plainNumber = num.parse(value.substring(0, e));
-    var exp = value.substring(e + 1);
+    num plainNumber = num.parse(value.substring(0, e));
+    String exp = value.substring(e + 1);
     return plainNumber * math.pow(10, num.parse(exp));
   }
 

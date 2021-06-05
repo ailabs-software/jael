@@ -5,7 +5,7 @@ import 'text/scanner.dart';
 /// Parses a Jael document.
 Document? parseDocument(String text, {String? sourceUrl, bool asDSX = false, void onError(JaelError error)?})
 {
-  var scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
+  Scanner scanner = scan(text, sourceUrl: sourceUrl, asDSX: asDSX);
 
   if (scanner.errors.isNotEmpty && onError != null) {
     scanner.errors.forEach(onError);
@@ -14,9 +14,9 @@ Document? parseDocument(String text, {String? sourceUrl, bool asDSX = false, voi
     throw scanner.errors.first;
   }
 
-  var parser = Parser(scanner, asDSX: asDSX);
+  Parser parser = new Parser(scanner, asDSX: asDSX);
 
-  var doc = parser.parseDocument();
+  Document? doc = parser.parseDocument();
 
   if (parser.errors.isNotEmpty && onError != null) {
     parser.errors.forEach(onError);

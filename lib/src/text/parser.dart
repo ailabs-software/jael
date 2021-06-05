@@ -16,16 +16,16 @@ class Parser {
   Token? get current => _current;
 
   int _nextPrecedence() {
-    var tok = peek();
+    Token? tok = peek();
     if (tok == null) return 0;
 
-    var parser = infixParselets[tok.type];
+    InfixParselet? parser = infixParselets[tok.type];
     return parser?.precedence ?? 0;
   }
 
   bool next(TokenType type) {
     if (_index >= scanner.tokens.length - 1) return false;
-    var peek = scanner.tokens[_index + 1];
+    Token peek = scanner.tokens[_index + 1];
 
     if (peek.type != type) return false;
 
@@ -48,15 +48,15 @@ class Parser {
   }
 
   Document? parseDocument() {
-    var doctype = parseDoctype();
+    Doctype? doctype = parseDoctype();
 
     if (doctype == null) {
-      var root = parseElement();
+      Element? root = parseElement();
       if (root == null) return null;
       return Document(null, root);
     }
 
-    var root = parseElement();
+    Element? root = parseElement();
 
     if (root == null) {
       errors.add(new JaelError('Missing root element after !DOCTYPE declaration.', doctype.span));
@@ -334,8 +334,8 @@ class Parser {
             return left;
           }
 
-          var infix = infixParselets[_current!.type]!;
-          var newLeft = infix.parse(this, left, _current);
+          InfixParselet infix = infixParselets[_current!.type]!;
+          Expression? newLeft = infix.parse(this, left, _current);
 
           if (newLeft == null) {
             if (_current!.type == TokenType.gt) _index--;

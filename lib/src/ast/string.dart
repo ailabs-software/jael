@@ -39,7 +39,7 @@ class StringLiteral extends Literal
         }
 
         if (i < codeUnits.length - 1) {
-          var next = codeUnits[++i];
+          int next = codeUnits[++i];
 
           switch (next) {
             case $b:

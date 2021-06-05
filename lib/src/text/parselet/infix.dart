@@ -29,7 +29,7 @@ class ConditionalParselet implements InfixParselet {
 
   @override
   Expression? parse(Parser parser, Expression? left, Token? token) {
-    var ifTrue = parser.parseExpression(0);
+    Expression? ifTrue = parser.parseExpression(0);
 
     if (ifTrue == null) {
       parser.errors.add(new JaelError('Missing expression in conditional expression.', token!.span));
@@ -41,8 +41,8 @@ class ConditionalParselet implements InfixParselet {
       return null;
     }
 
-    var colon = parser.current;
-    var ifFalse = parser.parseExpression(0);
+    Token? colon = parser.current;
+    Expression? ifFalse = parser.parseExpression(0);
 
     if (ifFalse == null) {
       parser.errors.add(JaelError('Missing expression in conditional expression.', colon!.span));
@@ -60,8 +60,9 @@ class BinaryParselet implements InfixParselet {
   const BinaryParselet(this.precedence);
 
   @override
-  Expression? parse(Parser parser, Expression? left, Token? token) {
-    var right = parser.parseExpression(precedence);
+  Expression? parse(Parser parser, Expression? left, Token? token)
+  {
+    Expression? right = parser.parseExpression(precedence);
 
     if (right == null) {
       if (token!.type != TokenType.gt) {
@@ -105,7 +106,7 @@ class CallParselet implements InfixParselet {
     }
 
     if (!parser.next(TokenType.rParen)) {
-      var lastSpan = arguments.isEmpty ? null : arguments.last.span;
+      CachingFileSpan? lastSpan = arguments.isEmpty ? null : arguments.last.span;
       lastSpan ??= token!.span;
       parser.errors.add(new JaelError('Missing ")" after argument list.', lastSpan));
       return null;
@@ -123,7 +124,7 @@ class IndexerParselet implements InfixParselet {
 
   @override
   Expression? parse(Parser parser, Expression? left, Token? token) {
-    var indexer = parser.parseExpression(0);
+    Expression? indexer = parser.parseExpression(0);
 
     if (indexer == null) {
       parser.errors.add(new JaelError('Missing expression after "[".', left!.span));
@@ -147,7 +148,7 @@ class MemberParselet implements InfixParselet {
 
   @override
   Expression? parse(Parser parser, Expression? left, Token? token) {
-    var name = parser.parseIdentifier();
+    Identifier? name = parser.parseIdentifier();
 
     if (name == null) {
       parser.errors.add(new JaelError('Expected the name of a property following "."', token!.span));

@@ -39,7 +39,7 @@ class Call extends Expression
   {
     dynamic callee = target!.compute(memberResolver, scope);
     List<dynamic> args = computePositional(memberResolver, scope);
-    var named = computeNamed(memberResolver, scope);
+    Map<Symbol, dynamic> named = computeNamed(memberResolver, scope);
 
     return Function.apply(callee as Function, args, named);
   }
