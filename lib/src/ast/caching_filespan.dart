@@ -18,12 +18,12 @@ class CachingFileSpan
 
   CachingFileSpan(FileSpan? this._fileSpan);
 
-  String? get text
+  String get text
   {
     if (_textCache == null) {
       _textCache = _fileSpan!.text;
     }
-    return _textCache;
+    return _textCache!;
   }
 
   FileLocation get start

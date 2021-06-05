@@ -33,7 +33,7 @@ class NumberLiteral extends Literal
   @override
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    return _value ??= parse(number!.span.text!);
+    return _value ??= parse(number!.span.text);
   }
 
   @override
@@ -64,7 +64,7 @@ class HexLiteral extends Literal
   @override
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    return _value ??= parse(hex!.span.text!);
+    return _value ??= parse(hex!.span.text);
   }
 
   @override

@@ -224,10 +224,10 @@ abstract class Renderer<T extends StringSink>
   {
     if (child is Text && parent.tagName.name != 'textarea') {
       if (index == 0) {
-        writeTextLiteral(output, child.span.text!.trimLeft());
+        writeTextLiteral(output, child.span.text.trimLeft());
       }
       else if (index == total - 1) {
-        writeTextLiteral(output, child.span.text!.trimRight());
+        writeTextLiteral(output, child.span.text.trimRight());
       }
       else {
         writeTextLiteral(output, child.span.text);

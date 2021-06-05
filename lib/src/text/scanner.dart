@@ -159,7 +159,7 @@ class _Scanner implements Scanner {
 
         CachingFileSpan span = new CachingFileSpan( _scanner!.spanFrom(start, end) );
 
-        if (span.text!.isNotEmpty) {
+        if (span.text.isNotEmpty) {
           tokens.add(new Token(TokenType.text, span, null));
         }
       }
@@ -196,7 +196,7 @@ class _Scanner implements Scanner {
           Token token = potential.first;
           tokens.add(token);
 
-          _scanner!.scan(token.span.text!);
+          _scanner!.scan(token.span.text);
 
           if (token.type == TokenType.lt) {
             brackets.addFirst(token);

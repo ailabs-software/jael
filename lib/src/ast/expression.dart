@@ -1,3 +1,4 @@
+import 'package:jael/jael.dart';
 import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
 import 'package:jael/src/member_resolver.dart';
 import 'caching_filespan.dart';
@@ -8,9 +9,16 @@ abstract class Expression extends AstNode
 {
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope);
 
-  String? computeAsStringLiteral()
+  String computeAsStringLiteral()
   {
-    return compute(null, null) as String?;
+    Object? value = compute(null, null);
+    if (value == null) {
+      throw new JaelError("A string literal is expected, but the expression evaluated to null.", span);
+    }
+    if (value is String) {
+      return value;
+    }
+    throw new JaelError("A string literal is expected, but the expression evaluated to a non-string type.", span);
   }
 
   void assertIsValidDartExpression();

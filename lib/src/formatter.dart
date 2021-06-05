@@ -67,25 +67,25 @@ class JaelFormatter {
     if (child == null) {
       return lineLength;
     } else if (child is Element) return _formatElement(child, lineLength);
-    String? s;
+    String s;
     if (child is Interpolation) {
       StringBuffer b = new StringBuffer('{{');
       if (child.isRaw) b.write('-');
       b.write(' ');
-      b.write(child.expression.span.text!.trim());
+      b.write(child.expression.span.text.trim());
       b.write(' }}');
       s = b.toString();
     } else {
       s = child.span.text;
     }
     if (isFirst) {
-      s = s!.trimLeft();
+      s = s.trimLeft();
     }
     if (isLast) {
-      s = s!.trimRight();
+      s = s.trimRight();
     }
 
-    int ll = lineLength + s!.length;
+    int ll = lineLength + s.length;
     if (ll <= maxLineLength) {
       _buffer.write(s);
       return ll;
