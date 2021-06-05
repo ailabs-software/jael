@@ -17,19 +17,19 @@ class MapLiteral extends Literal
   @override
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    return pairs.fold< Map<String?, dynamic> >(<String?, dynamic>{}, (out, p) {
-      String? key;
+    return pairs.fold< Map<String, dynamic> >(<String, dynamic>{}, (out, p) {
+      String key;
       dynamic value;
 
       if (p.colon == null) {
         if (p.key is! Identifier) {
-          key = value = p.key!.compute(memberResolver, scope) as String?;
+          key = value = p.key!.compute(memberResolver, scope) as String;
         } else {
           key = (p.key as Identifier).name;
           value = p.key!.compute(memberResolver, scope);
         }
       } else {
-        key = p.key!.compute(memberResolver, scope) as String?;
+        key = p.key!.compute(memberResolver, scope) as String;
         value = p.value!.compute(memberResolver, scope);
       }
 
