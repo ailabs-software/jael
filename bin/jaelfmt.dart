@@ -85,7 +85,6 @@ Future<void> formatStat(
       break;
     default:
       throw new Exception('No file or directory found at "$path".');
-      break;
   }
 }
 

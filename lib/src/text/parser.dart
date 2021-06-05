@@ -377,14 +377,16 @@ class Parser {
 
     if (!next(TokenType.colon)) return KeyValuePair(key, null, null);
 
-    var colon = _current, value = parseExpression(0) as Token?;
+    Token? colon = _current;
+
+    Expression? value = parseExpression(0);
 
     if (value == null) {
       errors.add(JaelError('Missing expression in key-value pair.', colon!.span));
       return null;
     }
 
-    return KeyValuePair(key, colon, value as Expression?);
+    return KeyValuePair(key, colon, value);
   }
 
   NamedArgument? parseNamedArgument() {
