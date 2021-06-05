@@ -86,7 +86,8 @@ class Parser {
       _index--;
       return null;
     }
-    var doctype = _current, html = parseIdentifier() as Token?;
+    var doctype = _current;
+    var html = parseIdentifier();
     if (html?.span.text?.toLowerCase() != 'html') {
       errors.add(new JaelError('Expected "html" in doctype declaration.', html?.span ?? doctype!.span));
       return null;
@@ -99,7 +100,7 @@ class Parser {
         return null;
       }
 
-      return Doctype(lt, doctype, html as Identifier?, null, null, null, _current);
+      return Doctype(lt, doctype, html, null, null, null, _current);
     }
 
     if (public.span.text?.toLowerCase() != 'public') {
@@ -128,7 +129,7 @@ class Parser {
       return null;
     }
 
-    return Doctype(lt, doctype, html as Identifier?, public, name, url, _current);
+    return Doctype(lt, doctype, html, public, name, url, _current);
   }
 
   ElementChild? parseElementChild() =>
@@ -398,13 +399,14 @@ class Parser {
       return null;
     }
 
-    var colon = _current, value = parseExpression(0) as Token?;
+    var colon = _current;
+    var value = parseExpression(0);
 
     if (value == null) {
       errors.add(new JaelError('Missing expression in named argument.', colon!.span));
       return null;
     }
 
-    return NamedArgument(name, colon, value as Expression);
+    return NamedArgument(name, colon, value);
   }
 }
