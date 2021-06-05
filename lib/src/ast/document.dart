@@ -5,7 +5,8 @@ import 'identifier.dart';
 import 'string.dart';
 import 'token.dart';
 
-class Document extends AstNode {
+class Document extends AstNode
+{
   final Doctype? doctype;
   final Element root;
 
@@ -18,7 +19,8 @@ class Document extends AstNode {
   }
 }
 
-class HtmlComment extends ElementChild {
+class HtmlComment extends ElementChild
+{
   final Token? htmlComment;
 
   HtmlComment(this.htmlComment);
@@ -27,7 +29,8 @@ class HtmlComment extends ElementChild {
   CachingFileSpan get span => htmlComment!.span;
 }
 
-class Text extends ElementChild {
+class Text extends ElementChild
+{
   final Token? text;
 
   Text(this.text);
@@ -36,16 +39,21 @@ class Text extends ElementChild {
   CachingFileSpan get span => text!.span;
 }
 
-class Doctype extends AstNode {
-  final Token? lt, doctype, gt;
-  final Identifier? html, public;
-  final StringLiteral? name, url;
+class Doctype extends AstNode
+{
+  final Token? lt;
+  final Token? doctype;
+  final Token? gt;
+  final Identifier? html;
+  final Identifier? public;
+  final StringLiteral? name;
+  final StringLiteral? url;
 
-  Doctype(this.lt, this.doctype, this.html, this.public, this.name, this.url,
-      this.gt);
+  Doctype(this.lt, this.doctype, this.html, this.public, this.name, this.url, this.gt);
 
   @override
-  CachingFileSpan get span {
+  CachingFileSpan get span
+  {
     if (public == null) {
       return lt!.span.expand(doctype!.span).expand(html!.span).expand(gt!.span);
     }

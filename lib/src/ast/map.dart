@@ -54,7 +54,8 @@ class MapLiteral extends Literal
 
 class KeyValuePair extends AstNode
 {
-  final Expression? key, value;
+  final Expression? key;
+  final Expression? value;
   final Token? colon;
 
   KeyValuePair(this.key, this.colon, this.value);
@@ -62,7 +63,9 @@ class KeyValuePair extends AstNode
   @override
   CachingFileSpan get span
   {
-    if (colon == null) return key!.span;
+    if (colon == null) {
+      return key!.span;
+    }
     return colon!.span.expand(colon!.span).expand(value!.span);
   }
 }

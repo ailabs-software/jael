@@ -19,7 +19,7 @@ class NotParselet implements PrefixParselet
   @override
   Expression parse(Parser parser, Token? token)
   {
-    var expression = parser.parseExpression(0);
+    Expression? expression = parser.parseExpression(0);
 
     if (expression == null) {
       parser.errors.add(new JaelError('Missing expression after "!" in negation expression.', token!.span));
@@ -96,7 +96,7 @@ class ArrayParselet implements PrefixParselet
     }
 
     if (!parser.next(TokenType.rBracket)) {
-      var lastSpan = items.isEmpty ? null : items.last.span;
+      CachingFileSpan? lastSpan = items.isEmpty ? null : items.last.span;
       lastSpan ??= token!.span;
       parser.errors.add(new JaelError('Missing "]" to terminate array literal.', lastSpan));
       return null;
@@ -124,7 +124,7 @@ class MapParselet implements PrefixParselet
     }
 
     if (!parser.next(TokenType.rCurly)) {
-      var lastSpan = pairs.isEmpty ? token!.span : pairs.last.span;
+      CachingFileSpan lastSpan = pairs.isEmpty ? token!.span : pairs.last.span;
       parser.errors.add(new JaelError('Missing "}" in map literal.', lastSpan));
       return null;
     }

@@ -37,7 +37,7 @@ class Negation extends Expression
   @override
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    var v = expression!.compute(memberResolver, scope) as bool?;
+    bool? v = expression!.compute(memberResolver, scope) as bool?;
 
     if (scope!.resolve('!strict!')?.value == false) {
       v = v == true;

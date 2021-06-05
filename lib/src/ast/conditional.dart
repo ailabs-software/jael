@@ -27,7 +27,7 @@ class Conditional extends Expression
   @override
   dynamic compute(IMemberResolver? memberResolver, SymbolTable? scope)
   {
-    var v = condition!.compute(memberResolver, scope) as bool?;
+    bool? v = condition!.compute(memberResolver, scope) as bool?;
 
     if (scope!.resolve('!strict!')?.value == false) {
       v = v == true;

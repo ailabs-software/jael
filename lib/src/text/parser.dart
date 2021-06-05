@@ -80,27 +80,27 @@ class Parser {
 
   Doctype? parseDoctype() {
     if (!next(TokenType.lt)) return null;
-    var lt = _current;
+    Token? lt = _current;
 
     if (!next(TokenType.doctype)) {
       _index--;
       return null;
     }
-    var doctype = _current;
-    var html = parseIdentifier();
+    Token? doctype = _current;
+    Identifier? html = parseIdentifier();
     if (html?.span.text?.toLowerCase() != 'html') {
       errors.add(new JaelError('Expected "html" in doctype declaration.', html?.span ?? doctype!.span));
       return null;
     }
 
-    var public = parseIdentifier();
+    Identifier? public = parseIdentifier();
     if (public == null) {
       if (!next(TokenType.gt)) {
         errors.add(new JaelError('Expected ">" in doctype declaration.', html!.span));
         return null;
       }
 
-      return Doctype(lt, doctype, html, null, null, null, _current);
+      return new Doctype(lt, doctype, html, null, null, null, _current);
     }
 
     if (public.span.text?.toLowerCase() != 'public') {
@@ -108,21 +108,21 @@ class Parser {
       return null;
     }
 
-    var stringParser = prefixParselets[TokenType.string];
+    PrefixParselet? stringParser = prefixParselets[TokenType.string];
 
     if (!next(TokenType.string)) {
       errors.add(new JaelError('Expected string in doctype declaration.', public.span));
       return null;
     }
 
-    var name = stringParser!.parse(this, _current) as StringLiteral?;
+    StringLiteral? name = stringParser!.parse(this, _current) as StringLiteral?;
 
     if (!next(TokenType.string)) {
       errors.add(new JaelError('Expected string in doctype declaration.', name!.span));
       return null;
     }
 
-    var url = stringParser.parse(this, _current) as StringLiteral?;
+    StringLiteral? url = stringParser.parse(this, _current) as StringLiteral?;
 
     if (!next(TokenType.gt)) {
       errors.add(new JaelError('Expected ">" in doctype declaration.', url!.span));
@@ -145,9 +145,9 @@ class Parser {
 
   Interpolation? parseInterpolation() {
     if (!next(asDSX ? TokenType.lCurly : TokenType.lDoubleCurly)) return null;
-    var doubleCurlyL = _current;
+    Token? doubleCurlyL = _current;
 
-    var expression = parseExpression(0);
+    Expression? expression = parseExpression(0);
 
     if (expression == null) {
       errors.add(new JaelError('Missing expression in interpolation.', doubleCurlyL!.span));
@@ -155,7 +155,7 @@ class Parser {
     }
 
     if (!next(asDSX ? TokenType.rCurly : TokenType.rDoubleCurly)) {
-      var expected = asDSX ? '}' : '}}';
+      String expected = asDSX ? '}' : '}}';
       errors.add(new JaelError('Missing closing "$expected" in interpolation.', expression.span));
       return null;
     }
@@ -165,7 +165,7 @@ class Parser {
 
   Element? parseElement() {
     if (!next(TokenType.lt)) return null;
-    var lt = _current;
+    Token? lt = _current;
 
     if (next(TokenType.slash)) {
       // We entered a closing tag, don't keep reading...
@@ -190,7 +190,7 @@ class Parser {
 
     if (next(TokenType.slash)) {
       // Try for self-closing...
-      var slash = _current;
+      Token? slash = _current;
 
       if (!next(TokenType.gt)) {
         errors.add(new JaelError('Missing ">" in self-closing "${tagName.name}" tag.', slash!.span));
@@ -215,7 +215,7 @@ class Parser {
     }
 
     List<ElementChild> children = [];
-    var child = parseElementChild();
+    ElementChild? child = parseElementChild();
 
     while (child != null) {
       // if (child is! HtmlComment) children.add(child);
@@ -229,7 +229,7 @@ class Parser {
       return null;
     }
 
-    var lt2 = _current;
+    Token? lt2 = _current;
 
     if (!next(TokenType.slash)) {
       errors.add(new JaelError('Missing "/" in "${tagName.name}" closing tag.', lt2!.span));
@@ -270,18 +270,21 @@ class Parser {
       return null;
     }
 
-    Token? equals, nequ;
+    Token? equals;
+    Token? nequ;
 
     if (next(TokenType.equals)) {
       equals = _current;
-    } else if (!asDSX && next(TokenType.nequ)) {
+    }
+    else if (!asDSX && next(TokenType.nequ)) {
       nequ = _current;
-    } else {
+    }
+    else {
       return Attribute(id, string, null, null, null);
     }
 
     if (!asDSX) {
-      var value = parseExpression(0);
+      Expression? value = parseExpression(0);
 
       if (value == null) {
         errors.add(new JaelError('Missing expression in attribute.', equals?.span ?? nequ!.span));
@@ -289,15 +292,16 @@ class Parser {
       }
 
       return Attribute(id, string, equals, nequ, value);
-    } else {
+    }
+    else {
       // Find either a string, or an interpolation.
-      var value = implicitString();
+      StringLiteral? value = implicitString();
 
       if (value != null) {
         return Attribute(id, string, equals, nequ, value);
       }
 
-      var interpolation = parseInterpolation();
+      Interpolation? interpolation = parseInterpolation();
 
       if (interpolation != null) {
         return Attribute(id, string, equals, nequ, interpolation.expression);
@@ -311,10 +315,11 @@ class Parser {
   Expression? parseExpression(int precedence) {
     // Only consume a token if it could potentially be a prefix parselet
 
-    for (var type in prefixParselets.keys) {
+    for (TokenType type in prefixParselets.keys)
+    {
 
       if (next(type)) {
-        var left = prefixParselets[type]!.parse(this, _current);
+        Expression? left = prefixParselets[type]!.parse(this, _current);
 
         while (precedence < _nextPrecedence()) {
           _current = scanner.tokens[++_index];
@@ -373,7 +378,7 @@ class Parser {
   }
 
   KeyValuePair? parseKeyValuePair() {
-    var key = parseExpression(0);
+    Expression? key = parseExpression(0);
     if (key == null) return null;
 
     if (!next(TokenType.colon)) return KeyValuePair(key, null, null);
@@ -391,7 +396,7 @@ class Parser {
   }
 
   NamedArgument? parseNamedArgument() {
-    var name = parseIdentifier();
+    Identifier? name = parseIdentifier();
     if (name == null) return null;
 
     if (!next(TokenType.colon)) {
@@ -399,8 +404,8 @@ class Parser {
       return null;
     }
 
-    var colon = _current;
-    var value = parseExpression(0);
+    Token? colon = _current;
+    Expression? value = parseExpression(0);
 
     if (value == null) {
       errors.add(new JaelError('Missing expression in named argument.', colon!.span));

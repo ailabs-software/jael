@@ -99,9 +99,11 @@ class _Scanner implements Scanner {
     while (!_scanner!.isDone) {
       if (state == _ScannerState.html) {
         scanHtml(asDSX);
-      } else if (state == _ScannerState.freeText) {
+      }
+      else if (state == _ScannerState.freeText) {
         // Just keep parsing until we hit "</"
-        var start = _scanner!.state, end = start;
+        LineScannerState start = _scanner!.state;
+        LineScannerState end = start;
 
         while (!_scanner!.isDone) {
           // Skip through comments
@@ -114,7 +116,7 @@ class _Scanner implements Scanner {
             break;
           }
 
-          var ch = _scanner!.readChar();
+          int ch = _scanner!.readChar();
 
           if (ch == $lt) {
             // && !_scanner.isDone) {
@@ -124,17 +126,18 @@ class _Scanner implements Scanner {
               _scanner!.position--;
               state = _ScannerState.html;
               break;
-            } else if (_scanner!.matches(_id)) {
+            }
+            else if (_scanner!.matches(_id)) {
               // Also break when we reach <foo.
               //
               // HOWEVER, that is also JavaScript. So we must
               // only break in this case when the current tag is NOT "script".
-              var shouldBreak =
+              bool shouldBreak =
                   (openTags.isEmpty || openTags.first != 'script');
 
               if (!shouldBreak) {
                 // Try to see if we are closing a script tag
-                var replay = _scanner!.state;
+                LineScannerState replay = _scanner!.state;
                 _scanner!
                   ..readChar()
                   ..scan(_whitespace);
@@ -167,22 +170,25 @@ class _Scanner implements Scanner {
         CachingFileSpan span = new CachingFileSpan( _scanner!.spanFrom(start, end) );
 
         if (span.text!.isNotEmpty) {
-          tokens.add(Token(TokenType.text, span, null));
+          tokens.add(new Token(TokenType.text, span, null));
         }
       }
     }
   }
 
-  void scanHtml(bool asDSX) {
-    var brackets = Queue<Token>();
+  void scanHtml(bool asDSX)
+  {
+    Queue<Token> brackets = new Queue<Token>();
 
-    outer_loop:do {
+    outer_loop:do
+    {
       // Only continue if we find a left bracket
       if (true) {
         // || _scanner.matches('<') || _scanner.matches('{{')) {
-        var potential = <Token>[];
+        List<Token> potential = <Token>[];
 
-        while (true) {
+        while (true)
+        {
           // Scan whitespace
           _scanner!.scan(_whitespace);
 
@@ -196,7 +202,7 @@ class _Scanner implements Scanner {
 
           if (potential.isEmpty) break outer_loop;
 
-          var token = potential.first;
+          Token token = potential.first;
           tokens.add(token);
 
           _scanner!.scan(token.span.text!);
@@ -205,7 +211,7 @@ class _Scanner implements Scanner {
             brackets.addFirst(token);
 
             // Try to see if we are at a tag.
-            var replay = _scanner!.state;
+            LineScannerState replay = _scanner!.state;
             _scanner!.scan(_whitespace);
 
             if (_scanner!.matches(_id)) {
@@ -227,7 +233,7 @@ class _Scanner implements Scanner {
               brackets.removeFirst();
 
               // Now, ONLY continue parsing HTML if the next character is '<'.
-              var replay = _scanner!.state;
+              LineScannerState replay = _scanner!.state;
               _scanner!.scan(_whitespace);
 
               if (!_scanner!.matches('<')) {
@@ -242,7 +248,7 @@ class _Scanner implements Scanner {
               // We're at foo>, try to parse text?
               brackets.removeFirst();
 
-              var replay = _scanner!.state;
+              LineScannerState replay = _scanner!.state;
               _scanner!.scan(_whitespace);
 
               if (!_scanner!.matches('<')) {

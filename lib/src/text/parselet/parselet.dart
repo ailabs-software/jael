@@ -1,5 +1,7 @@
 library jael.src.text.parselet;
 
+import 'package:jael/src/ast/caching_filespan.dart';
+
 import '../../ast/ast.dart';
 import '../parser.dart';
 part 'infix.dart';

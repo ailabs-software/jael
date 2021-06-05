@@ -5,12 +5,12 @@ class JaelFormatter {
   final num tabSize;
   final bool? insertSpaces;
   final int maxLineLength;
-  final StringBuffer _buffer = StringBuffer();
+  final StringBuffer _buffer = new StringBuffer();
   int _level = 0;
   String? _spaces;
 
   static String _spaceString(int tabSize) {
-    var b = StringBuffer();
+    StringBuffer b = new StringBuffer();
     for (int i = 0; i < tabSize; i++) {
       b.write(' ');
     }
@@ -36,7 +36,7 @@ class JaelFormatter {
   }
 
   int get _spaceLength {
-    var out = 0;
+    int out = 0;
     for (int i = 0; i < _level; i++) {
       out += _spaces!.length;
     }
@@ -69,7 +69,7 @@ class JaelFormatter {
     } else if (child is Element) return _formatElement(child, lineLength);
     String? s;
     if (child is Interpolation) {
-      var b = StringBuffer('{{');
+      StringBuffer b = new StringBuffer('{{');
       if (child.isRaw) b.write('-');
       b.write(' ');
       b.write(child.expression.span.text!.trim());
@@ -85,7 +85,7 @@ class JaelFormatter {
       s = s!.trimRight();
     }
 
-    var ll = lineLength + s!.length;
+    int ll = lineLength + s!.length;
     if (ll <= maxLineLength) {
       _buffer.write(s);
       return ll;
@@ -100,29 +100,30 @@ class JaelFormatter {
     //   element.tagName.name,
     //   element.children.map((c) => c.runtimeType),
     // ]);
-    var header = '<${element.tagName.name}';
-    var attrParts = element.attributes.isEmpty
+    String header = '<${element.tagName.name}';
+    Iterable<String> attrParts = element.attributes.isEmpty
         ? <String>[]
         : element.attributes.map(_formatAttribute);
-    var attrLen = attrParts.isEmpty
+    int attrLen = attrParts.isEmpty
         ? 0
         : attrParts.map((s) => s.length).reduce((a, b) => a + b);
     _applySpacing();
     _buffer.write(header);
 
     // If the line will be less than maxLineLength characters, write all attrs.
-    var ll = lineLength +
+    int ll = lineLength +
         (element is SelfClosingElement ? 2 : 1) +
         header.length +
         attrLen;
     if (ll <= maxLineLength) {
       attrParts.forEach(_buffer.write);
-    } else {
+    }
+    else {
       // Otherwise, them out with tabs.
       _buffer.writeln();
       _indent();
-      var i = 0;
-      for (var p in attrParts) {
+      int i = 0;
+      for (String p in attrParts) {
         if (i++ > 0) {
           _buffer.writeln();
         }
@@ -135,7 +136,8 @@ class JaelFormatter {
     if (element is SelfClosingElement) {
       _buffer.writeln('/>');
       return _spaceLength;
-    } else {
+    }
+    else {
       _buffer.write('>');
       if (element.children.isNotEmpty) {
         _buffer.writeln();
@@ -143,10 +145,11 @@ class JaelFormatter {
     }
 
     _indent();
-    var lll = _spaceLength;
-    var i = 1;
+    int lll = _spaceLength;
+    int i = 1;
     ElementChild? last;
-    for (var c in element.children) {
+    for (ElementChild c in element.children)
+    {
       if (lll == _spaceLength && c is! Element) {
         _applySpacing();
       }
@@ -170,12 +173,12 @@ class JaelFormatter {
   }
 
   String _formatAttribute(Attribute attr) {
-    var b = StringBuffer();
+    StringBuffer b = new StringBuffer();
     b.write(' ${attr.name}');
 
     if (attr.value != null) {
       if (attr.value is Identifier) {
-        var id = attr.value as Identifier;
+        Identifier id = attr.value as Identifier;
         if (id.name == 'true') {
           b.write(id.name);
         } else if (id.name != 'false') {

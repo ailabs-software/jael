@@ -1,8 +1,9 @@
-import 'package:jclosure/structs/symbols/symbol_table/SymbolTable.dart';
-import 'package:jael/src/member_resolver.dart';
-import 'caching_filespan.dart';
-import 'expression.dart';
-import 'token.dart';
+import "package:jclosure/structs/symbols/symbol_table/Variable.dart";
+import "package:jclosure/structs/symbols/symbol_table/SymbolTable.dart";
+import "package:jael/src/member_resolver.dart";
+import "caching_filespan.dart";
+import "expression.dart";
+import "token.dart";
 
 class Identifier extends Expression
 {
@@ -31,7 +32,7 @@ class Identifier extends Expression
       case 'false':
         return false;
       default:
-        var symbol = scope!.resolve(name);
+        Variable<dynamic>? symbol = scope!.resolve(name);
         if (symbol == null) {
           if (scope.resolve('!strict!')?.value == false) return null;
           throw ArgumentError('The name "$name" does not exist in this scope.');
