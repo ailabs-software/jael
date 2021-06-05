@@ -21,11 +21,9 @@ abstract class Scanner {
 }
 
 final Map<Pattern, TokenType> _expressionPatterns = {
-//final Map<Pattern, TokenType> _htmlPatterns = {
   '{{': TokenType.lDoubleCurly,
   '{{-': TokenType.lDoubleCurly,
 
-  //
   _htmlComment: TokenType.htmlComment,
   '!DOCTYPE': TokenType.doctype,
   '!doctype': TokenType.doctype,
@@ -41,9 +39,7 @@ final Map<Pattern, TokenType> _expressionPatterns = {
   'new': TokenType.$new,
 
   _id: TokenType.id,
-//};
 
-//final Map<Pattern, TokenType> _expressionPatterns = {
   '}}': TokenType.rDoubleCurly,
 
   // Misc.
@@ -53,7 +49,6 @@ final Map<Pattern, TokenType> _expressionPatterns = {
   '.': TokenType.dot,
   '??': TokenType.elvis,
   '?.': TokenType.elvis_dot,
-  '=': TokenType.equals,
   '!': TokenType.exclamation,
   '-': TokenType.minus,
   '%': TokenType.percent,
@@ -64,16 +59,11 @@ final Map<Pattern, TokenType> _expressionPatterns = {
   '}': TokenType.rCurly,
   '(': TokenType.lParen,
   ')': TokenType.rParen,
-  '/': TokenType.slash,
-  '<': TokenType.lt,
   '<=': TokenType.lte,
-  '>': TokenType.gt,
   '>=': TokenType.gte,
   '==': TokenType.equ,
-  '!=': TokenType.nequ,
-  '=': TokenType.equals,
-  RegExp(r'-?[0-9]+(\.[0-9]+)?([Ee][0-9]+)?'): TokenType.number,
-  RegExp(r'0x[A-Fa-f0-9]+'): TokenType.hex,
+  new RegExp(r'-?[0-9]+(\.[0-9]+)?([Ee][0-9]+)?'): TokenType.number,
+  new RegExp(r'0x[A-Fa-f0-9]+'): TokenType.hex,
   _string1: TokenType.string,
   _string2: TokenType.string,
   _id: TokenType.id,
@@ -192,9 +182,10 @@ class _Scanner implements Scanner {
           // Scan whitespace
           _scanner!.scan(_whitespace);
 
-          _expressionPatterns.forEach((pattern, type) {
+          _expressionPatterns.forEach((Pattern pattern, TokenType type)
+          {
             if (_scanner!.matches(pattern)) {
-              potential.add(Token(type, new CachingFileSpan(_scanner!.lastSpan), _scanner!.lastMatch));
+              potential.add(new Token(type, new CachingFileSpan(_scanner!.lastSpan), _scanner!.lastMatch));
             }
           });
 
